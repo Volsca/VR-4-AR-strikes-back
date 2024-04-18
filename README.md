@@ -10,7 +10,7 @@ Current funcionalities :
 
 Envisioned functionalities : 
 - Adding an avatar (Or portions of one)
-- A switch between full VR and MR
+- A way of switching between full VR and MR
 - More interaction with virtual objects
 - VR UI used to maybe spawn objects in the world to interact with
 - Real world objects tracked in VR that can interact with VR objects
