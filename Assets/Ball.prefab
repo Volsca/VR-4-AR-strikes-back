@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1076008171593707797}
   - component: {fileID: 5900394452317598256}
   - component: {fileID: 327188374621006725}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ MonoBehaviour:
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
   _pointableElement: {fileID: 8770821101295280828}
-  _rigidbody: {fileID: 0}
+  _rigidbody: {fileID: -4289757575970975448}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 0
   _releaseDistance: 0
