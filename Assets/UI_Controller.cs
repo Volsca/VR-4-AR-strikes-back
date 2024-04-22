@@ -6,7 +6,7 @@ public class UI_Controller : MonoBehaviour
 {
     public GameObject MainCamera;
     public GameObject UI_Prefab;
-    public float margin = 0.2f;
+    public float margin = 0.30f; // une marge de cos(pi/4)
     GameObject WristUI;
 
 
@@ -14,9 +14,7 @@ public class UI_Controller : MonoBehaviour
     void Start()
     {
         // Starting position of the UI, moving it to be at the side of the wrist
-        Vector3 startPosition = transform.position;
-        //startPosition.x += 0.3f;
-        startPosition.z += -0.3f;
+        Vector3 startPosition = intersectionUI();
 
         WristUI = Instantiate(UI_Prefab, startPosition, Quaternion.identity);
         WristUI.transform.parent = this.transform;
@@ -26,18 +24,39 @@ public class UI_Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // If controller Y axis alligned with camera.forward axis then show UI
-        Vector3 ControllerY = this.transform.right.normalized;
         Vector3 HMDForward = MainCamera.transform.forward.normalized;
+        WristUI.transform.position = intersectionUI();
         WristUI.transform.rotation = Quaternion.LookRotation(HMDForward, Vector3.up);
 
-        if(Vector3.Dot(HMDForward, ControllerY) >= 1 - margin)
+        Debug.Log("Première condition");
+        Debug.Log(Vector3.Dot(-transform.right.normalized, MainCamera.transform.right.normalized) > 1 - margin);
+
+        Debug.Log("Deuxième condition");
+        Debug.Log(Vector3.Dot(-transform.up.normalized, HMDForward) > 1 - margin);
+
+        // Condition pour afficher le UI
+        if (true)//Vector3.Dot(-transform.right.normalized, MainCamera.transform.right.normalized) > 1 - margin && Vector3.Dot(transform.up.normalized, HMDForward) > 1 - margin)
         {
             WristUI.SetActive(true);
         }
-        else
+        /*else
         {
             WristUI.SetActive(false);
-        }
+        }*/
+    }
+
+    // Calcule l'intersection entre le casque et le plan de la main 
+    Vector3 intersectionUI()
+    {
+        Vector3 PI;
+        Vector3 HMDForward = MainCamera.transform.forward.normalized;
+        Vector3 Ym = this.transform.up.normalized;
+
+        float D = Vector3.Dot(Ym, transform.position); // Maybe invert the sign
+        float t = -(D + Vector3.Dot(Ym, MainCamera.transform.position) / Vector3.Dot(Ym, HMDForward));
+
+        PI = t * HMDForward + MainCamera.transform.position;
+
+        return PI;
     }
 }
