@@ -6,7 +6,10 @@ public class UI_Controller : MonoBehaviour
 {
     public GameObject MainCamera;
     public GameObject UI_Prefab;
-    public float margin = 0.30f; // une marge de cos(pi/4)
+    public GameObject UI_Follow;
+    public float margin = 0.10f; // une marge de cos(pi/4)
+    public float disMargin = 0.7f;
+    public float distance = 0.2f;
     GameObject WristUI;
 
 
@@ -14,10 +17,10 @@ public class UI_Controller : MonoBehaviour
     void Start()
     {
         // Starting position of the UI, moving it to be at the side of the wrist
-        Vector3 startPosition = intersectionUI();
-
+        Vector3 HMDForward = MainCamera.transform.forward.normalized;
+        Vector3 startPosition = MainCamera.transform.position + distance * HMDForward;
         WristUI = Instantiate(UI_Prefab, startPosition, Quaternion.identity);
-        WristUI.transform.parent = this.transform;
+        //WristUI.transform.parent = this.transform;
         WristUI.SetActive(false);
     }
 
@@ -25,8 +28,12 @@ public class UI_Controller : MonoBehaviour
     void Update()
     {
         Vector3 HMDForward = MainCamera.transform.forward.normalized;
-        WristUI.transform.position = intersectionUI();
-        WristUI.transform.rotation = Quaternion.LookRotation(HMDForward, Vector3.up);
+        //Trop sensible au variations d'angle de la main
+        //WristUI.transform.position = IntersectionUI();
+
+        Vector3 HMDDirection = MainCamera.transform.position - WristUI.transform.position;
+        Quaternion lookRotation = Quaternion.LookRotation(-HMDDirection);
+        WristUI.transform.rotation = lookRotation;
 
         Debug.Log("Première condition");
         Debug.Log(Vector3.Dot(-transform.right.normalized, MainCamera.transform.right.normalized) > 1 - margin);
@@ -35,18 +42,19 @@ public class UI_Controller : MonoBehaviour
         Debug.Log(Vector3.Dot(-transform.up.normalized, HMDForward) > 1 - margin);
 
         // Condition pour afficher le UI
-        if (true)//Vector3.Dot(-transform.right.normalized, MainCamera.transform.right.normalized) > 1 - margin && Vector3.Dot(transform.up.normalized, HMDForward) > 1 - margin)
+        if (Vector3.Dot(transform.up.normalized, HMDForward) > 1 - margin)//Vector3.Dot(-transform.right.normalized, MainCamera.transform.right.normalized) > 1 - margin && Vector3.Dot(transform.up.normalized, HMDForward) > 1 - margin)
         {
             WristUI.SetActive(true);
         }
-        /*else
+        else if (Vector3.Dot(transform.up.normalized, HMDForward) < 1 - disMargin)
         {
+            WristUI.transform.position = MainCamera.transform.position + distance * HMDForward;
             WristUI.SetActive(false);
-        }*/
+        }
     }
 
-    // Calcule l'intersection entre le casque et le plan de la main 
-    Vector3 intersectionUI()
+    // Calcule l'intersection entre le casque et le plan de la main /////// DEPRECATED ////////
+    Vector3 IntersectionUI()
     {
         Vector3 PI;
         Vector3 HMDForward = MainCamera.transform.forward.normalized;
