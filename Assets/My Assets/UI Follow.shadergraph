@@ -670,10 +670,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -670.0000610351563,
-            "y": 88.00004577636719,
+            "x": -632.0,
+            "y": 84.0,
             "width": 208.0,
-            "height": 326.0
+            "height": 326.0000305175781
         }
     },
     "m_Slots": [
@@ -890,7 +890,7 @@
     "m_ShaderOutputName": "A",
     "m_StageCapability": 3,
     "m_Value": {
-        "x": -0.5,
+        "x": -1.5,
         "y": 0.0,
         "z": 0.0,
         "w": 0.0
@@ -1735,7 +1735,7 @@
         "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
         "m_Guid": ""
     },
-    "m_DefaultType": 0
+    "m_DefaultType": 3
 }
 
 {
@@ -1844,7 +1844,7 @@
     "m_ShaderOutputName": "B",
     "m_StageCapability": 3,
     "m_Value": {
-        "x": 1.0,
+        "x": 2.0,
         "y": 1.0,
         "z": 1.0,
         "w": 1.0
