@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 5186760152284603857}
   - component: {fileID: 7464675045248738505}
   m_Layer: 6
-  m_Name: Grabbable UI Template
+  m_Name: Portable UI Template
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
