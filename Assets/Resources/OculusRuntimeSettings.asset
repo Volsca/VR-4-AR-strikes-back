@@ -17,4 +17,4 @@ MonoBehaviour:
   requestsAudioFaceTracking: 1
   telemetryProjectGuid: 230f0087-880a-42be-91fc-412317986920
   bodyTrackingFidelity: 2
-  bodyTrackingJointSet: 1
+  bodyTrackingJointSet: 0

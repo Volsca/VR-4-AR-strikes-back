@@ -23,14 +23,14 @@ public class UI_Functions : MonoBehaviour
 
     public void SpawnBall()
     {
-        GameObject Cube = Instantiate(cubePrefab);
-        Cube.transform.position = transform.position;
+        GameObject Ball = Instantiate(ballPrefab);
+        Ball.transform.position = transform.position;
     }
 
     public void SpawnBallShooter()
     {
-        GameObject Cube = Instantiate(cubePrefab);
-        Cube.transform.position = transform.position;
+        GameObject BallShooter = Instantiate(ballShooterPrefab);
+        BallShooter.transform.position = transform.position;
     }
 
     public void SpawnFood()
