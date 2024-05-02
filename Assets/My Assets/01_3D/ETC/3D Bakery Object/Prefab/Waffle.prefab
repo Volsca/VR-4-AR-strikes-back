@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -5365559885339229269}
   - component: {fileID: -8288469180431306421}
   - component: {fileID: 8147653418373767479}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Waffle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4200486136778082419}
   - component: {fileID: 6716208380559413765}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -1480730128295268288}
   - component: {fileID: 1645755578908766852}
   - component: {fileID: -7830228366289279461}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Donuts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5422963437723762197}
   - component: {fileID: 3313298634331408297}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

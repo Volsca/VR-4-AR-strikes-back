@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1758227967507187365}
   - component: {fileID: 9123692225288001779}
   - component: {fileID: -5215207509367517498}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hambuger
   m_TagString: Untagged
   m_Icon: {fileID: 0}

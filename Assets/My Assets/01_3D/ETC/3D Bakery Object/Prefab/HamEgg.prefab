@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8938000277147489712}
   - component: {fileID: 5017356909515295069}
   - component: {fileID: -8885034360142371735}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: HamEgg
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,14 +12,20 @@ public class HandsController : MonoBehaviour
     public GameObject rHandVisual;
     public Material HandsDefault;
     public Material HandsBeige;
+    public HandsFade lHandFade;
+    public HandsFade rHandFade;
 
     private Renderer _rRenderer;
     private Renderer _lRenderer;
+    private bool activeHandSphere;
 
     public TMP_Dropdown dropdown;
 
     void Start()
     {
+        activeHandSphere = true;
+        SetActiveHandsDefault();
+        
         // Add a listener to the dropdown's onValueChanged event
         dropdown.onValueChanged.AddListener(delegate {
             DropdownValueChanged(dropdown);
@@ -51,21 +57,42 @@ public class HandsController : MonoBehaviour
         }
     }
 
+    // Button functions
+    public void HandActivateSphere()
+    {
+       if (activeHandSphere == true)
+       {
+           lHandFade.gameObject.SetActive(false);
+           rHandFade.gameObject.SetActive(false);
 
+           lHandVisual.SetActive(true);
+           rHandVisual.SetActive(true);
+       
+           activeHandSphere = false;
+       }
+        else
+        {
+            lHandFade.gameObject.SetActive(true);
+            rHandFade.gameObject.SetActive(true);
+
+            lHandVisual.SetActive(false);
+            rHandVisual.SetActive(false);
+
+            activeHandSphere = true;
+        }
+    }
     void DeactivateHands()
     {
         UpperBodyAvatar.SetActive(false);
         lHandVisual.SetActive(false);
         rHandVisual.SetActive(false);
     }
-
     void SetActiveUpperBodyAvatar()
     {
         UpperBodyAvatar.SetActive(true);
         lHandVisual.SetActive(false);
         rHandVisual.SetActive(false);
     }
-
     void SetActiveHandsDefault()
     {
         UpperBodyAvatar.SetActive(false);
@@ -99,7 +126,6 @@ public class HandsController : MonoBehaviour
             Debug.LogError("Renderer component not found on the GameObject.");
         }
     }
-
     void SetActiveHandsBeige()
     {
         UpperBodyAvatar.SetActive(false);

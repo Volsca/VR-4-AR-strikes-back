@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 100000, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
       propertyPath: m_Icon
       value: 
@@ -17,8 +21,24 @@ PrefabInstance:
       value: flaregun
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 100012, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 100014, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 1d204df1bf723d645a3ce8946a952fed, type: 3}
       propertyPath: m_LocalScale.x
