@@ -15,24 +15,23 @@ public class UI_Functions : MonoBehaviour
 
     private int foodCounter = 1;
 
+
+    // Functions called by the buttons on the grabbable menu
     public void SpawnCube()
     {
         GameObject Cube = Instantiate(cubePrefab);
         Cube.transform.position = transform.position;
     }
-
     public void SpawnBall()
     {
         GameObject Ball = Instantiate(ballPrefab);
         Ball.transform.position = transform.position;
     }
-
     public void SpawnBallShooter()
     {
         GameObject BallShooter = Instantiate(ballShooterPrefab);
         BallShooter.transform.position = transform.position;
     }
-
     public void SpawnFood()
     {
 

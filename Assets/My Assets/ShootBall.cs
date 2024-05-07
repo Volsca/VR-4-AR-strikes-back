@@ -16,12 +16,11 @@ public class ShootBall : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-        {
-            GameObject SpawnedObject = Instantiate(Projectile, transform.position, Quaternion.identity);
-            SpawnedObject.GetComponent<Rigidbody>().velocity = transform.forward * shootSpeed;
-        }
+        
+            //GameObject SpawnedObject = Instantiate(Projectile, transform.position, Quaternion.identity);
+            //SpawnedObject.GetComponent<Rigidbody>().velocity = transform.forward * shootSpeed;
+        
     }
 }

@@ -19,7 +19,10 @@ public class HandsController : MonoBehaviour
     private Renderer _lRenderer;
     private bool activeHandSphere;
 
+    public DebugWindow debug;
+
     public TMP_Dropdown dropdown;
+    public Scrollbar scrollbar;
 
     void Start()
     {
@@ -56,42 +59,42 @@ public class HandsController : MonoBehaviour
                 break;
         }
     }
+    public void ScrollbarValueChanged()
+    {
+        debug.writeDebugMessage("Scrollbar value : " + scrollbar.value, 0, "HandsColtroller.cs");
+    }
 
-    // Button functions
+    // Switches fade on and off
     public void HandActivateSphere()
     {
-       if (activeHandSphere == true)
-       {
-           lHandFade.gameObject.SetActive(false);
-           rHandFade.gameObject.SetActive(false);
-
-           lHandVisual.SetActive(true);
-           rHandVisual.SetActive(true);
-       
-           activeHandSphere = false;
-       }
+        if (activeHandSphere != true)
+        {
+            ActivateFade();
+            HandChange();
+        }
         else
         {
-            lHandFade.gameObject.SetActive(true);
-            rHandFade.gameObject.SetActive(true);
-
-            lHandVisual.SetActive(false);
-            rHandVisual.SetActive(false);
-
-            activeHandSphere = true;
+            DeactivateFade();
+            HandChange();
         }
+
+        activeHandSphere = !activeHandSphere;
     }
     void DeactivateHands()
     {
         UpperBodyAvatar.SetActive(false);
         lHandVisual.SetActive(false);
         rHandVisual.SetActive(false);
+
+        DeactivateFade();
     }
     void SetActiveUpperBodyAvatar()
     {
         UpperBodyAvatar.SetActive(true);
         lHandVisual.SetActive(false);
         rHandVisual.SetActive(false);
+
+        DeactivateFade();
     }
     void SetActiveHandsDefault()
     {
@@ -125,6 +128,10 @@ public class HandsController : MonoBehaviour
         {
             Debug.LogError("Renderer component not found on the GameObject.");
         }
+
+        // Make sure the fade is working
+        ActivateFade();
+        HandChange();
     }
     void SetActiveHandsBeige()
     {
@@ -158,5 +165,26 @@ public class HandsController : MonoBehaviour
         {
             Debug.LogError("Renderer component not found on the GameObject.");
         }
+
+        // Make sure the fade is working
+        ActivateFade();
+        HandChange();
+    }
+
+    void HandChange()
+    {
+        lHandFade.OnHandChange();
+        rHandFade.OnHandChange();
+    }
+
+    void ActivateFade()
+    {
+        lHandFade.Activate();
+        rHandFade.Activate();
+    }
+    void DeactivateFade()
+    {
+        lHandFade.Deactivate();
+        rHandFade.Deactivate();
     }
 }

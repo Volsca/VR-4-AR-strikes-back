@@ -54,11 +54,12 @@ public class HandsFade : MonoBehaviour
 
     private void ChangeOpacity(float opacity)
     {
-        DebugWindowScript.writeDebugMessage("Opacity to be : " + opacity + " ----- Nearest object : " + nearestObjectDistance(), 0, "HandsFade script");
+        //DebugWindowScript.writeDebugMessage("Opacity to be : " + opacity + " ----- Nearest object : " + nearestObjectDistance(), 0, "HandsFade script");
         //Color myColor = objectMaterial.color;
         //myColor.a = opacity;
         //objectMaterial.color = myColor;
-        Debug.Log("Opacity was : " + objectMaterial.GetFloat("_Opacity"));
+
+        // Methode fonctionelle pour changer l'opacité des matériaux Oculus (ne pas oublier de changer le render type à fade)
         objectMaterial.SetFloat("_Opacity", opacity);
         objectMaterial.SetFloat("_OutlineOpacity", opacity);
     }
@@ -68,7 +69,7 @@ public class HandsFade : MonoBehaviour
     private float setOpacity()
     {
         //float clampedValue = Mathf.Clamp(nearestObjectDistance(), 0.2f, 0.5f);
-        float mappedValue = (Mathf.Clamp(nearestObjectDistance(), 0.4f, 0.8f) - 0.4f) / (0.8f - 0.4f);
+        float mappedValue = (Mathf.Clamp(nearestObjectDistance(), 0.3f, 0.65f) - 0.3f) / (0.65f - 0.3f);
         float op = Mathf.Clamp(Mathf.Lerp(1, 0, mappedValue * alpha), 0, 1);
         //DebugWindowScript.writeDebugMessage("Nearest object distance : " + nearestObjectDistance(), 0, "HandsFade script");
         //DebugWindowScript.writeDebugMessage("Opacity calculation : " + op, 0, "HandsFade script");
@@ -122,5 +123,25 @@ public class HandsFade : MonoBehaviour
             //DebugWindowScript.writeDebugMessage("Grabbables within trigger : " + collidersInsideTrigger, 0, "HandsFade script");
         }
 
+    }
+
+    public void OnHandChange()
+    {
+        Renderer handRenderer = Hand.GetComponent<Renderer>();
+        objectMaterial = handRenderer.material;
+        objectMaterial.SetOverrideTag("RenderType", "Fade");
+    }
+    public void Activate()
+    {
+        isActive = true;
+    }
+    public void Deactivate()
+    {
+        isActive = false;
+    }
+
+    public void SetAlpha(float a)
+    {
+        alpha = a*2.0f + 0.5f;
     }
 }
