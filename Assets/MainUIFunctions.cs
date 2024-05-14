@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class MainUIFunctions : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public GameObject grabbableUI;
+    public GameObject rHand;
+    public GameObject mainCamera;
 
-    // Update is called once per frame
-    void Update()
+    // Move the menu when activated
+    public void GrabbableToggle()
     {
-        
+        //grabbableUI.transform.localPosition = rHand.transform.localPosition;
+        //Vector3 offset = new Vector3(0, 180, 0);
+        //grabbableUI.transform.LookAt(mainCamera.transform.position + offset);
+        //grabbableUI.transform.Rotate(grabbableUI.transform.forward, 180.0f);
     }
 }
