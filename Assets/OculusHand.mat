@@ -115,7 +115,7 @@ Material:
     - _OutlineOpacity: 1
     - _OutlinePinchRange: 0.15
     - _OutlineSphereHardness: 0.15
-    - _OutlineWidth: 0.0024
+    - _OutlineWidth: 0.00149
     - _Parallax: 0.02
     - _PinchIntensity: 0
     - _PinchRange: 0.12
@@ -128,7 +128,7 @@ Material:
     - _ThumbGlowValue: 0
     - _UVSec: 0
     - _UseTexture: 0
-    - _WristFade: 1
+    - _WristFade: 0.84
     - _WristLocalOffset: 0.06
     - _WristRange: 0.08
     - _WristScale: 1

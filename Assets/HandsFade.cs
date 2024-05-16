@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class HandsFade : MonoBehaviour
 {
+
+    public GlobalVariables GV;
+    /*
     public GameObject Hand;
     public GameObject _SynthHand;
     public float alpha;
@@ -17,30 +20,44 @@ public class HandsFade : MonoBehaviour
     public GameObject HandLoco;
     public GameObject HandTouch;
     public GameObject HandUse;
+    public float OutlineSize;
     //public Material handMaterial;
-
+    */
     private bool isActive;
     private float collidersInsideTrigger;
     private List<GameObject> gList;
     private Material[] objectMaterial;
     private float size;
     private Vector3 scale;
+    public bool rightHanded;
 
     private void Start()
     {
+        GV.handOutlineSize = 1;
         scale = new Vector3(1, 1, 1);
         size = 1.0f;
-        alpha = 1.0f;
+        GV.alpha = 1.0f;
         isActive = true;
         //Hand.SetActive(false);
         collidersInsideTrigger = 0;
         gList = new List<GameObject>();
         //DebugWindowScript = DebugWindow.GetComponent<DebugWindow>();
 
-        Renderer handRenderer = Hand.GetComponent<Renderer>();
+        Renderer handRenderer;
+        // Left handed
+        if (rightHanded == false)
+        {
+            handRenderer = GV.l_handMeshNode.GetComponent<Renderer>();
+        }
+        else
+        {
+            handRenderer = GV.r_handMeshNode.GetComponent<Renderer>();
+        }
+
         objectMaterial = handRenderer.materials;
         objectMaterial[0].SetOverrideTag("RenderType", "Fade");
-        objectMaterial[1].SetOverrideTag("RenderType", "Fade");
+        //objectMaterial[1].SetOverrideTag("SurfaceType", "Transparent");
+        //objectMaterial[1].SetOverrideTag("RenderType", "Transparent");
     } 
 
     private void Update()
@@ -62,8 +79,12 @@ public class HandsFade : MonoBehaviour
         {
             ChangeOpacity(1.0f);
         }
+        float outSize = Mathf.Lerp(0.0f, 0.005f, Mathf.Clamp(GV.handOutlineSize, 0, 1));
+        objectMaterial[0].SetFloat("_OutlineWidth", outSize);
+        //objectMaterial[1].SetFloat("_OutlineWidth", outSize);
         this.transform.localScale = scale * size;
-        _SynthHand.GetComponent<SyntheticSize>().SetSize(size);
+        
+        /*_SynthHand.GetComponent<SyntheticSize>().SetSize(size);
         HandParent.transform.localScale = scale * size;
         HandPoke.transform.localScale = this.transform.localScale;
         HandGrab.transform.localScale = this.transform.localScale;
@@ -72,7 +93,7 @@ public class HandsFade : MonoBehaviour
         HandLoco.transform.localScale = this.transform.localScale;
         HandTouch.transform.localScale = this.transform.localScale;
         HandUse.transform.localScale = this.transform.localScale;
-        
+        */
     }
 
     private void ChangeOpacity(float opacity)
@@ -81,12 +102,17 @@ public class HandsFade : MonoBehaviour
         //Color myColor = objectMaterial.color;
         //myColor.a = opacity;
         //objectMaterial.color = myColor;
-
+        /*
+        foreach(Material m in GV._HandMaterials)
+        {
+            m.SetFloat("_Opacity", opacity);
+        }
+        */
         // Methode fonctionelle pour changer l'opacité des matériaux Oculus (ne pas oublier de changer le render type à fade)
         objectMaterial[0].SetFloat("_Opacity", opacity);
         objectMaterial[0].SetFloat("_OutlineOpacity", opacity);
-        objectMaterial[1].SetFloat("_Opacity", opacity);
-        objectMaterial[1].SetFloat("_OutlineOpacity", opacity);
+        //objectMaterial[1].SetFloat("_Opacity", opacity);
+        
     }
     private float nearestObjectDistance()
     {
@@ -132,9 +158,21 @@ public class HandsFade : MonoBehaviour
 
     public void OnHandChange()
     {
-        Renderer handRenderer = Hand.GetComponent<Renderer>();
-        objectMaterial = handRenderer.material;
-        objectMaterial.SetOverrideTag("RenderType", "Fade");
+        Renderer handRenderer;
+        // Left handed
+        if (rightHanded == false)
+        {
+            handRenderer = GV.l_handMeshNode.GetComponent<Renderer>();
+        }
+        else
+        {
+            handRenderer = GV.r_handMeshNode.GetComponent<Renderer>();
+        }
+
+        objectMaterial = handRenderer.materials;
+        objectMaterial[0].SetOverrideTag("RenderType", "Fade");
+        //objectMaterial[1].SetOverrideTag("SurfaceType", "Transparent");
+        //objectMaterial[1].SetOverrideTag("RenderType", "Transparent");
     }
     public void Activate()
     {
@@ -146,7 +184,7 @@ public class HandsFade : MonoBehaviour
     }
     public void SetAlpha(float a)
     {
-        alpha = a*2.0f + 0.5f;
+        GV.alpha = a*2.0f + 0.5f;
     }
     public void SetActiveBool()
     {
@@ -158,7 +196,7 @@ public class HandsFade : MonoBehaviour
     {
         //float clampedValue = Mathf.Clamp(nearestObjectDistance(), 0.2f, 0.5f);
         float mappedValue = (Mathf.Clamp(nearestObjectDistance(), 0.3f, 0.65f) - 0.3f) / (0.65f - 0.3f);
-        float op = Mathf.Clamp(Mathf.Lerp(1, 0, mappedValue * alpha), 0, 1);
+        float op = Mathf.Clamp(Mathf.Lerp(1, 0, mappedValue * GV.alpha), 0, 1);
         //DebugWindowScript.writeDebugMessage("Nearest object distance : " + nearestObjectDistance(), 0, "HandsFade script");
         //DebugWindowScript.writeDebugMessage("Opacity calculation : " + op, 0, "HandsFade script");
         return op;
@@ -166,5 +204,9 @@ public class HandsFade : MonoBehaviour
     public void SetSize(float s)
     {
         size = s;
+    }
+    public void SetOutlineSize(float s)
+    {
+        GV.handOutlineSize = s;
     }
 }

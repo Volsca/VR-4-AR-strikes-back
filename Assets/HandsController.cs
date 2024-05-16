@@ -7,6 +7,7 @@ using TMPro;
 
 public class HandsController : MonoBehaviour
 {
+    /*
     public GameObject UpperBodyAvatar;
     public GameObject lHandVisual;
     public GameObject rHandVisual;
@@ -14,15 +15,17 @@ public class HandsController : MonoBehaviour
     public Material HandsBeige;
     public HandsFade lHandFade;
     public HandsFade rHandFade;
+    */
+    public GlobalVariables GV;
 
     private Renderer _rRenderer;
     private Renderer _lRenderer;
     private bool activeHandSphere;
 
-    public DebugWindow debug;
+    //public DebugWindow debug;
 
-    public TMP_Dropdown dropdown;
-    public Scrollbar scrollbar;
+    //public TMP_Dropdown dropdown;
+    //public Scrollbar scrollbar;
 
     void Start()
     {
@@ -30,8 +33,8 @@ public class HandsController : MonoBehaviour
         SetActiveHandsDefault();
         
         // Add a listener to the dropdown's onValueChanged event
-        dropdown.onValueChanged.AddListener(delegate {
-            DropdownValueChanged(dropdown);
+        GV._HandModelDropdown.onValueChanged.AddListener(delegate {
+            DropdownValueChanged(GV._HandModelDropdown);
         });
     }
 
@@ -61,7 +64,7 @@ public class HandsController : MonoBehaviour
     }
     public void ScrollbarValueChanged()
     {
-        debug.writeDebugMessage("Scrollbar value : " + scrollbar.value, 0, "HandsColtroller.cs");
+        //GV._DebugWindow.writeDebugMessage("Scrollbar value : " + GV._HandFadeScrollbar.value, 0, "HandsColtroller.cs");
     }
 
     // Switches fade on and off
@@ -82,33 +85,33 @@ public class HandsController : MonoBehaviour
     }
     void DeactivateHands()
     {
-        UpperBodyAvatar.SetActive(false);
-        lHandVisual.SetActive(false);
-        rHandVisual.SetActive(false);
+        GV._FullBodyAvatar.SetActive(false);
+        GV.l_handMeshNode.SetActive(false);
+        GV.r_handMeshNode.SetActive(false);
 
         DeactivateFade();
     }
     void SetActiveUpperBodyAvatar()
     {
-        UpperBodyAvatar.SetActive(true);
-        lHandVisual.SetActive(false);
-        rHandVisual.SetActive(false);
+        GV._FullBodyAvatar.SetActive(true);
+        GV.l_handMeshNode.SetActive(false);
+        GV.r_handMeshNode.SetActive(false);
 
         DeactivateFade();
     }
     void SetActiveHandsDefault()
     {
-        UpperBodyAvatar.SetActive(false);
-        lHandVisual.SetActive(true);
-        rHandVisual.SetActive(true);
+        GV._FullBodyAvatar.SetActive(false);
+        GV.l_handMeshNode.SetActive(true);
+        GV.r_handMeshNode.SetActive(true);
 
-        _lRenderer = lHandVisual.GetComponent<Renderer>();
-        _rRenderer = rHandVisual.GetComponent<Renderer>();
+        _lRenderer = GV.l_handMeshNode.GetComponent<Renderer>();
+        _rRenderer = GV.r_handMeshNode.GetComponent<Renderer>();
 
         if (_lRenderer != null)
         {
             Material[] materials = _lRenderer.materials;
-            Material newMaterial = HandsDefault;
+            Material newMaterial = GV._HandMaterials[0];
             materials[0] = newMaterial;
             _lRenderer.materials = materials;
         }
@@ -120,7 +123,7 @@ public class HandsController : MonoBehaviour
         if (_rRenderer != null)
         {
             Material[] materials = _rRenderer.materials;
-            Material newMaterial = HandsDefault;
+            Material newMaterial = GV._HandMaterials[0];
             materials[0] = newMaterial;
             _rRenderer.materials = materials;
         }
@@ -135,17 +138,17 @@ public class HandsController : MonoBehaviour
     }
     void SetActiveHandsBeige()
     {
-        UpperBodyAvatar.SetActive(false);
-        lHandVisual.SetActive(true);
-        rHandVisual.SetActive(true);
+        GV._FullBodyAvatar.SetActive(false);
+        GV.l_handMeshNode.SetActive(true);
+        GV.r_handMeshNode.SetActive(true);
 
-        _lRenderer = lHandVisual.GetComponent<Renderer>();
-        _rRenderer = rHandVisual.GetComponent<Renderer>();
+        _lRenderer = GV.l_handMeshNode.GetComponent<Renderer>();
+        _rRenderer = GV.r_handMeshNode.GetComponent<Renderer>();
 
         if (_lRenderer != null)
         {
             Material[] materials = _lRenderer.materials;
-            Material newMaterial = HandsBeige;
+            Material newMaterial = GV._HandMaterials[1];
             materials[0] = newMaterial;
             _lRenderer.materials = materials;
         }
@@ -157,7 +160,7 @@ public class HandsController : MonoBehaviour
         if (_rRenderer != null)
         {
             Material[] materials = _rRenderer.materials;
-            Material newMaterial = HandsBeige;
+            Material newMaterial = GV._HandMaterials[1];
             materials[0] = newMaterial;
             _rRenderer.materials = materials;
         }
@@ -173,18 +176,18 @@ public class HandsController : MonoBehaviour
 
     void HandChange()
     {
-        lHandFade.OnHandChange();
-        rHandFade.OnHandChange();
+        GV.l_handFade.OnHandChange();
+        GV.r_handFade.OnHandChange();
     }
 
     void ActivateFade()
     {
-        lHandFade.Activate();
-        rHandFade.Activate();
+        GV.l_handFade.Activate();
+        GV.r_handFade.Activate();
     }
     void DeactivateFade()
     {
-        lHandFade.Deactivate();
-        rHandFade.Deactivate();
+        GV.l_handFade.Deactivate();
+        GV.r_handFade.Deactivate();
     }
 }

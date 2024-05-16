@@ -12,12 +12,18 @@ public class setSize : MonoBehaviour
 
     private void Start()
     {
-        scrollbar.SetValueWithoutNotify(0.5f);
+        scrollbar.SetValueWithoutNotify(0.0f);
     }
 
     public void SetHandSize()
     {
-        lHand.SetSize(scrollbar.value + 0.5f);
-        rHand.SetSize(scrollbar.value + 0.5f);
+        lHand.SetSize(scrollbar.value/10 + 1.0f);
+        rHand.SetSize(scrollbar.value/10 + 1.0f);
+    }
+
+    public void SetOutlineSize()
+    {
+        lHand.SetOutlineSize(scrollbar.value);
+        rHand.SetOutlineSize(scrollbar.value);
     }
 }
