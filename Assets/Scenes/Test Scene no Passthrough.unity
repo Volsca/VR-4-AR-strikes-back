@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 91ec3969391e93b40b8c5ea10360195d, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.11262749, g: 0.36362007, b: 0.73339975, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -10701,7 +10701,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e0a82252e703a334fae061c8afabd4a1, type: 2}
+  - {fileID: 2100000, guid: cf641176bd6c7344c9c365621a077d2c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11574,6 +11574,17 @@ MonoBehaviour:
   foodPrefab3: {fileID: 100000, guid: a7dfc8f0b06a1f64a889c6c9e36e23d5, type: 3}
   foodPrefab4: {fileID: 100000, guid: e51fe706056928b4586f68a8eeaabac5, type: 3}
   foodPrefab5: {fileID: 100000, guid: 5b63de927760304438a3c6ac347846d5, type: 3}
+  puzzleCubes:
+  - {fileID: 6065698883415297113, guid: 13ba6e1f19ebc7a4e975951f91305097, type: 3}
+  - {fileID: 6065698883415297113, guid: f5ee083a43df96543974bc4365f6d065, type: 3}
+  - {fileID: 6065698883415297113, guid: a5b9be8615c28ab47bcf679962cb7274, type: 3}
+  - {fileID: 6065698883415297113, guid: 8acaa321cb8145e4781bb880abf68f54, type: 3}
+  - {fileID: 6065698883415297113, guid: 8fef19b99fe5a0c4abd91a3685fc33a2, type: 3}
+  - {fileID: 6065698883415297113, guid: 76cd4af7d4206694fa86ea09ff935f59, type: 3}
+  - {fileID: 6065698883415297113, guid: 6918c6193b469764f832ba465ad1f12c, type: 3}
+  - {fileID: 6065698883415297113, guid: 65a009af48ed8b344b5042241957b5a3, type: 3}
+  - {fileID: 6065698883415297113, guid: 0e6839f1215eabc449ea4a34ebf317ca, type: 3}
+  spawnMargin: 0
 --- !u!1 &1672010983
 GameObject:
   m_ObjectHideFlags: 0
@@ -13208,7 +13219,7 @@ PrefabInstance:
     - target: {fileID: 7440154488193997100, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}
       propertyPath: m_Name
-      value: Spawn Shooter
+      value: Spawn Puzzle
       objectReference: {fileID: 0}
     - target: {fileID: 7440154488193997100, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}
@@ -13223,7 +13234,7 @@ PrefabInstance:
     - target: {fileID: 8486764774878548629, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8486764774878548629, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}
@@ -13243,7 +13254,7 @@ PrefabInstance:
     - target: {fileID: 8486764774878548629, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SpawnBallShooter
+      value: SpawnPuzzle
       objectReference: {fileID: 0}
     - target: {fileID: 8486764774878548629, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}
@@ -13258,7 +13269,7 @@ PrefabInstance:
     - target: {fileID: 8498113218856672200, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}
       propertyPath: m_text
-      value: BUTTON
+      value: PUZZLE
       objectReference: {fileID: 0}
     - target: {fileID: 8498113218856672200, guid: 8c1c12e1e9209e8409a9b072af338e21,
         type: 3}

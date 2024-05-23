@@ -13,6 +13,9 @@ public class UI_Functions : MonoBehaviour
     public GameObject foodPrefab4;
     public GameObject foodPrefab5;
 
+    public List<GameObject> puzzleCubes;
+    public float spawnMargin;
+
     private int foodCounter = 1;
 
 
@@ -63,5 +66,34 @@ public class UI_Functions : MonoBehaviour
 
         foodCounter += 1;
         foodCounter = foodCounter % 5;
+    }
+    public void SpawnPuzzle()
+    {
+        GameObject cube1 = Instantiate(puzzleCubes[0]);
+        cube1.transform.position = transform.position;
+        GameObject cube4 = Instantiate(puzzleCubes[3], cube1.transform.position 
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(0, 0, 1) 
+                                                       + spawnMargin * new Vector3(0, 0, 1), Quaternion.identity);
+        GameObject cube7 = Instantiate(puzzleCubes[6], cube4.transform.position
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(0, 0, 1)
+                                                       + spawnMargin * new Vector3(0, 0, 1), Quaternion.identity);
+        GameObject cube2 = Instantiate(puzzleCubes[1], cube1.transform.position
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(1, 0, 0)
+                                                       + spawnMargin * new Vector3(1, 0, 0), Quaternion.identity);
+        GameObject cube3 = Instantiate(puzzleCubes[2], cube2.transform.position
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(1, 0, 0)
+                                                       + spawnMargin * new Vector3(1, 0, 0), Quaternion.identity);
+        GameObject cube5 = Instantiate(puzzleCubes[4], cube4.transform.position
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(1, 0, 0)
+                                                       + spawnMargin * new Vector3(1, 0, 1), Quaternion.identity);
+        GameObject cube6 = Instantiate(puzzleCubes[5], cube5.transform.position
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(1, 0, 0)
+                                                       + spawnMargin * new Vector3(1, 0, 1), Quaternion.identity);
+        GameObject cube8 = Instantiate(puzzleCubes[7], cube7.transform.position
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(1, 0, 0)
+                                                       + spawnMargin * new Vector3(1, 0, 1), Quaternion.identity);
+        GameObject cube9 = Instantiate(puzzleCubes[8], cube8.transform.position
+                                                       + 1.2f * cube1.transform.localScale.x * new Vector3(1, 0, 0)
+                                                       + spawnMargin * new Vector3(1, 0, 1), Quaternion.identity);
     }
 }
