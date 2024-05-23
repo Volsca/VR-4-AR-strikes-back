@@ -94,7 +94,7 @@ Material:
     - _Fresnel: 1
     - _FresnelOpacity: 0
     - _FresnelOpacityPower: 3.66
-    - _FresnelPower: 5
+    - _FresnelPower: 2.62
     - _GenerateGlow: 0
     - _GlobalOpacity: 0.714
     - _GlossMapScale: 1
@@ -128,7 +128,7 @@ Material:
     - _ThumbGlowValue: 0
     - _UVSec: 0
     - _UseTexture: 0
-    - _WristFade: 0.84
+    - _WristFade: 1
     - _WristLocalOffset: 0.06
     - _WristRange: 0.08
     - _WristScale: 1

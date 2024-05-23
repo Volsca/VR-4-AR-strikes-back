@@ -10,6 +10,8 @@ public class GlobalVariables : MonoBehaviour
     // Hand meshes
     public GameObject l_handMeshNode;
     public GameObject r_handMeshNode;
+    public GameObject l_Controller;
+    public GameObject r_Controller;
 
     public GameObject l_Wrist;
     public GameObject r_Wrist;
@@ -41,7 +43,7 @@ public class GlobalVariables : MonoBehaviour
 
     public DebugWindow _DebugWindow;
     #endregion
-
+    /*
     private void Start()
     {
         _ListOfHandColors[0] = new Color(0.19f, 0.19f, 0.19f, 0);
@@ -55,4 +57,5 @@ public class GlobalVariables : MonoBehaviour
         _ListOfHandColors[8] = new Color(0.44f, 0.06f, 0.98f, 0);
         _ListOfHandColors[9] = new Color(0.44f, 0.06f, 0.98f, 0);
     }
+    */
 }
