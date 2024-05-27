@@ -11,6 +11,7 @@ public class HandsFade : MonoBehaviour
     public GameObject Hand;
 
     private bool isActive;
+    private float op2;
     private float collidersInsideTrigger;
     private float controllersInsideTrigger;
     private List<GameObject> gList;
@@ -23,6 +24,7 @@ public class HandsFade : MonoBehaviour
 
     private void Start()
     {
+        op2 = 0.0f;
         closestToController = false;
         fadeIn = true;
         GV.handOutlineSize = 1;
@@ -74,13 +76,9 @@ public class HandsFade : MonoBehaviour
                 ChangeOpacity(1 - setOpacity());
             }
         }
-        else if (fadeIn)
-        {
-            ChangeOpacity(1.0f);
-        }
         else
         {
-            ChangeOpacity(0.0f);
+            ChangeOpacity(op2);
         }
 
 
@@ -256,5 +254,19 @@ public class HandsFade : MonoBehaviour
     public void InvertFade()
     {
         fadeIn = !fadeIn;
+    }
+    public void BunnyFadeChange()
+    {
+        if (!isActive)
+        {
+            if (op2 > 0.5f)
+            {
+                op2 = 0.0f;
+            }
+            else
+            {
+                op2 = 1.0f;
+            }
+        }
     }
 }
