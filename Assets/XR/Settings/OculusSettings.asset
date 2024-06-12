@@ -30,4 +30,4 @@ MonoBehaviour:
   TargetQuest2: 0
   TargetQuestPro: 0
   TargetQuest3: 1
-  SystemSplashScreen: {fileID: 2800000, guid: c7aa633ea00fca04aafc5c1e69960790, type: 3}
+  SystemSplashScreen: {fileID: 0}

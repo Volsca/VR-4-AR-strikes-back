@@ -13,6 +13,8 @@ public class GlobalVariables : MonoBehaviour
     public GameObject l_Controller;
     public GameObject r_Controller;
 
+    public GameObject _HMD;
+
     public GameObject l_Wrist;
     public GameObject r_Wrist;
 
@@ -27,6 +29,9 @@ public class GlobalVariables : MonoBehaviour
     // Hand interactors
     public GameObject[] l_HandInteractors;
     public GameObject[] r_HandInteractors;
+
+    public GameObject l_HandAngleAggregator;
+    public GameObject r_HandAngleAggregator;
 
     public float alpha; // hand transparency
     public float handOutlineSize; // Pretty self explanatory
