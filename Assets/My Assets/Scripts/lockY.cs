@@ -7,6 +7,12 @@ public class lockY : MonoBehaviour
     public GameObject plane;
     public GlobalVariables GV;
     private bool initialized = false;
+    public bool setOnTable;
+
+    private void Start()
+    {
+        setOnTable = false;
+    }
 
     void Update()
     {
@@ -17,10 +23,10 @@ public class lockY : MonoBehaviour
                 initialized = true;
             }
         }
-        else
+        else if(!setOnTable)
         {
-            plane.transform.rotation = Quaternion.Euler(0, 0, 0);
-            plane.transform.position = GV.r_Controller.transform.position;
+            this.transform.rotation = Quaternion.Euler(0, 0, 0);
+            this.transform.position = GV.r_Controller.transform.position;
             GV._DebugWindow.writeDebugMessage("Plane position set : " + plane.transform.position + " : " + GV.r_Controller.transform.position, 0, "1010");
         }
     }
