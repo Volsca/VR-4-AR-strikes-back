@@ -1851,7 +1851,19 @@ MonoBehaviour:
   m_Value: 0.7
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 786764564}
+        m_TargetAssemblyTypeName: ExmerimentCalibrationScript, Assembly-CSharp
+        m_MethodName: changePlaneHeight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &786764564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1864,6 +1876,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdf61595ae61b6e46885d007e27a54a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ExpPlane: {fileID: 811132041}
+  _ExpController: {fileID: 1135603077}
+  slidySlideBoy: {fileID: 786764563}
+  calibMult: 0.04
 --- !u!1 &797120346
 GameObject:
   m_ObjectHideFlags: 0
@@ -10219,7 +10235,7 @@ RectTransform:
   m_Father: {fileID: 1021995084}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.7, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -10327,6 +10343,7 @@ Transform:
   m_Children:
   - {fileID: 811132045}
   - {fileID: 1471828242}
+  - {fileID: 4345176137942292628}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1135603076
@@ -10336,13 +10353,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1135603074}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9355a4c56b3420149a8edd9b1134a294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   plane: {fileID: 811132041}
+  _Experiment: {fileID: 1135603074}
+  controller: {fileID: 468859684}
   GV: {fileID: 1773701002}
+  setOnTable: 0
 --- !u!114 &1135603077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10356,10 +10376,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GV: {fileID: 1773701002}
+  _lockY: {fileID: 1135603076}
   cube: {fileID: 811132041}
   can: {fileID: 298590623}
   Rayon: 0.5
   nbPts: 8
+  _CalibrationMenu: {fileID: 5187911312044857801}
 --- !u!1001 &1140166412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10851,8 +10873,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1552718337}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.7, y: 0}
+  m_AnchorMax: {x: 0.7, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12071,15 +12093,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5187911312044857801}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.21602306, z: -0, w: 0.97638834}
-  m_LocalPosition: {x: 0.347, y: 0.893, z: 0.037}
+  m_LocalRotation: {x: -0, y: -0.5717596, z: -0, w: 0.8204213}
+  m_LocalPosition: {x: 0.319, y: 0.179, z: -0.123}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6024851131506173855}
   - {fileID: 530456284117637311}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -24.951, z: 0}
+  m_Father: {fileID: 1135603075}
+  m_LocalEulerAnglesHint: {x: 0, y: -69.746, z: 0}
 --- !u!1 &4346776783986572495
 GameObject:
   m_ObjectHideFlags: 0
@@ -12341,7 +12363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &5379909710581540563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12705,7 +12727,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4925885371102001938}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 786764564}
+        m_TargetAssemblyTypeName: ExmerimentCalibrationScript, Assembly-CSharp
+        m_MethodName: endCalibration
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5187911312044857801}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &8186875515796648609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12845,4 +12891,3 @@ SceneRoots:
   - {fileID: 776563376}
   - {fileID: 137756276}
   - {fileID: 1135603075}
-  - {fileID: 4345176137942292628}

@@ -85,7 +85,7 @@ public class DebugWindow : MonoBehaviour
         foreach (DebugMessage dm in _DebugMessage)
         {
             _Text.text += "\n<color=red>" + dm.message;// + " ----- Debug current count : " + _DebugMessage.Count;
-            Debug.LogError(dm.source + " : " + dm.message);
+            Debug.Log(dm.source + " : " + dm.message);
         }
     }
     public void debugButton()

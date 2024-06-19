@@ -5,6 +5,8 @@ using UnityEngine;
 public class lockY : MonoBehaviour
 {
     public GameObject plane;
+    public GameObject _Experiment;
+    public GameObject controller;
     public GlobalVariables GV;
     private bool initialized = false;
     public bool setOnTable;
@@ -26,8 +28,13 @@ public class lockY : MonoBehaviour
         else if(!setOnTable)
         {
             this.transform.rotation = Quaternion.Euler(0, 0, 0);
-            this.transform.position = GV.r_Controller.transform.position;
-            GV._DebugWindow.writeDebugMessage("Plane position set : " + plane.transform.position + " : " + GV.r_Controller.transform.position, 0, "1010");
+            this.transform.position = controller.transform.position;
+            //GV._DebugWindow.writeDebugMessage("Plane position set : " + plane.transform.position + " : " + GV.r_Controller.transform.position, 0, "1010");
+            //_Experiment.transform.parent = GV.r_Controller.transform;
+        }
+        else if (setOnTable)
+        {
+            //_Experiment.transform.parent = null;
         }
     }
 }
