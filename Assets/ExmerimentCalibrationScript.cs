@@ -5,12 +5,14 @@ using UnityEngine.UI;
 
 public class ExmerimentCalibrationScript : MonoBehaviour
 {
-    public GameObject _ExpPlane;
-    public ExperienceController _ExpController;
-    public Slider slidySlideBoy;
-    public float calibMult;
+    #region Attributes
+    [SerializeField] private GameObject _ExpPlane;
+    [SerializeField] private ExperienceController _ExpController;
+    [SerializeField] private Slider slidySlideBoy;
+    [SerializeField] private float calibMult;
 
     private Vector3 initPosition;
+    #endregion
 
     private void Awake()
     {

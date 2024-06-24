@@ -35,10 +35,10 @@ public class UI_Controller : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(-HMDDirection);
         WristUI.transform.rotation = lookRotation;
 
-        Debug.Log("Première condition");
+        Debug.Log("Premiï¿½re condition");
         Debug.Log(Vector3.Dot(-transform.right.normalized, MainCamera.transform.right.normalized) > 1 - margin);
 
-        Debug.Log("Deuxième condition");
+        Debug.Log("Deuxiï¿½me condition");
         Debug.Log(Vector3.Dot(-transform.up.normalized, HMDForward) > 1 - margin);
 
         // Condition pour afficher le UI

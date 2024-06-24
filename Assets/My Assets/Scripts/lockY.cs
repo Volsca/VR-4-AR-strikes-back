@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class lockY : MonoBehaviour
 {
-    public GameObject plane;
-    public GameObject _Experiment;
-    public GameObject controller;
-    public GlobalVariables GV;
+    [SerializeField] private GameObject plane;
+    [SerializeField] private GameObject _Experiment;
+    [SerializeField] private GameObject controller;
+    [SerializeField] private GlobalVariables GV;
     private bool initialized = false;
     public bool setOnTable;
 
@@ -25,7 +25,7 @@ public class lockY : MonoBehaviour
                 initialized = true;
             }
         }
-        else if(!setOnTable)
+        else if (!setOnTable)
         {
             this.transform.rotation = Quaternion.Euler(0, 0, 0);
             this.transform.position = controller.transform.position;
