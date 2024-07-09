@@ -8,12 +8,22 @@ public class lockY : MonoBehaviour
     [SerializeField] private GameObject _Experiment;
     [SerializeField] private GameObject controller;
     [SerializeField] private GlobalVariables GV;
+    [SerializeField] private GameObject _X;
+    [SerializeField] private GameObject _Y;
+    [SerializeField] private GameObject _Z;
+
     private bool initialized = false;
+    private bool reoriented;
     public bool setOnTable;
 
-    private void Start()
+    private Vector3 _XAxis;
+    private Vector3 _YAxis;
+    private Vector3 _ZAxis;
+
+    private void Awake()
     {
         setOnTable = false;
+        reoriented = false;
     }
 
     void Update()
@@ -29,12 +39,25 @@ public class lockY : MonoBehaviour
         {
             this.transform.rotation = Quaternion.Euler(0, 0, 0);
             this.transform.position = controller.transform.position;
-            //GV._DebugWindow.writeDebugMessage("Plane position set : " + plane.transform.position + " : " + GV.r_Controller.transform.position, 0, "1010");
-            //_Experiment.transform.parent = GV.r_Controller.transform;
+
+            _YAxis = _Y.transform.position - _X.transform.position;
+            _XAxis = _Z.transform.position - _X.transform.position;
         }
-        else if (setOnTable)
+        else if (setOnTable && !reoriented)
         {
-            //_Experiment.transform.parent = null;
+            reoriented = true;
+            Reorient();
         }
+    }
+
+    void Reorient()
+    {
+        _YAxis.Normalize();
+        _XAxis.Normalize();
+        _ZAxis = Vector3.Cross(_XAxis, _YAxis);
+        _ZAxis.Normalize();
+
+        Quaternion newRotation = Quaternion.LookRotation(_YAxis, _ZAxis);
+        transform.rotation = newRotation;
     }
 }

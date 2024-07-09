@@ -74,26 +74,6 @@ public class CSVLogWriter : MonoBehaviour
         ret[0] = (hand.transform.position - pp).magnitude / Time.deltaTime;
         ret[1] = Quaternion.Angle(pa, hand.transform.rotation) / Time.deltaTime;
 
-        // Eliminate null values
-        /*
-        if (ret[0] == 0)
-        {
-            ret[0] = pre[0];
-        }
-        else
-        {
-            pre[0] = ret[0];
-        }
-        if (ret[1] == 0)
-        {
-            ret[1] = pre[1];
-        }
-        else
-        {
-            pre[1] = ret[1];
-        }
-        */
-
         // Attribute previous values
         pp = hand.transform.position;
         pa = hand.transform.rotation;

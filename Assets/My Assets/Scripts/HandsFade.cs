@@ -22,12 +22,15 @@ public class HandsFade : MonoBehaviour
     private bool closestToController;
     public bool rightHanded;
 
+    private bool fade;
+
+    #region Awake/Start/Update Callbacks
     private void Start()
     {
+        fade = false;
         op2 = 0.0f;
         closestToController = false;
         fadeIn = true;
-        GV.handOutlineSize = 1;
         scale = new Vector3(1, 1, 1);
         size = 1.0f;
         GV.alpha = 1.0f;
@@ -35,9 +38,9 @@ public class HandsFade : MonoBehaviour
         collidersInsideTrigger = 0;
         controllersInsideTrigger = 0;
         gList = new List<GameObject>();
-
         Renderer handRenderer;
-        // Left handed
+
+        // Get Renderers and materials from the hands
         if (rightHanded == false)
         {
             handRenderer = GV.l_handMeshNode.GetComponent<Renderer>();
@@ -49,12 +52,15 @@ public class HandsFade : MonoBehaviour
 
         objectMaterial = handRenderer.materials;
         objectMaterial[0].SetOverrideTag("RenderType", "Fade");
-    } 
+
+        //ExperienceController._DeFadeHands += OnDeFade;
+        //ExperienceController._FadeHands += OnFade;
+    }
 
     private void Update()
     {
-        // Non Inverted
-        if (isActive && fadeIn)
+        // Original opacity control method, used distance from objects to calculate opacity
+        /*if (isActive && fadeIn)
         {
             if (collidersInsideTrigger == 0)
             {
@@ -79,46 +85,55 @@ public class HandsFade : MonoBehaviour
         else
         {
             ChangeOpacity(op2);
+        }*/
+        if (fade)
+        {
+            //ChangeOpacity(0.0f);
         }
-
+        else
+        {
+            //ChangeOpacity(1.0f);
+        }
+        
 
         float outSize = Mathf.Lerp(0.0f, 0.005f, Mathf.Clamp(GV.handOutlineSize, 0, 1));
-        objectMaterial[0].SetFloat("_OutlineWidth", outSize);
+        objectMaterial[0].SetFloat("_OutlineWidth", 0.003f);
 
         // Applying scale
         if (rightHanded == false)
         {
-            GV.l_Wrist.transform.localScale = scale * size;
+            GV.l_Wrist.transform.localScale = scale * 1.05f;
         }
         else
         {
-            GV.r_Wrist.transform.localScale = scale * size;
+            GV.r_Wrist.transform.localScale = scale * 1.05f;
         }
-        Hand.transform.localScale = scale * size;
 
-        /*_SynthHand.GetComponent<SyntheticSize>().SetSize(size);
-        HandParent.transform.localScale = scale * size;
-        HandPoke.transform.localScale = this.transform.localScale;
-        HandGrab.transform.localScale = this.transform.localScale;
-        
-        HandRay.transform.localScale = this.transform.localScale;
-        HandLoco.transform.localScale = this.transform.localScale;
-        HandTouch.transform.localScale = this.transform.localScale;
-        HandUse.transform.localScale = this.transform.localScale;
-        */
+        Hand.transform.localScale = scale * 1.05f;
+    }
+    #endregion
+
+    #region Utilitarian Methods
+
+    void OnFade()
+    {
+        fade = true;
     }
 
-    
+    void OnDeFade()
+    {
+        fade = false;
+    }
+
+    #endregion
 
     private void ChangeOpacity(float opacity)
     {
 
-        // Methode fonctionelle pour changer l'opacité des matériaux Oculus (ne pas oublier de changer le render type à fade)
-        
+        // Methode fonctionelle pour changer l'opacitÃ© des matÃ©riaux Oculus (ne pas oublier de changer le render type en fade)
         //objectMaterial[0].SetColor("_ColorTop", new Color(0.1f, 0.1f, 0.1f, 0));
         objectMaterial[0].SetFloat("_Opacity", opacity);
         objectMaterial[0].SetFloat("_OutlineOpacity", opacity);
-        
     }
     private float nearestObjectDistance()
     {
@@ -152,22 +167,14 @@ public class HandsFade : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        //DebugWindowScript.writeDebugMessage("Entered Trigger", 0, "HandsFade script");
         if (other.gameObject.layer == LayerMask.NameToLayer("Grabbable"))
         {
-            //transform.gameObject.SetActive(true);
             collidersInsideTrigger++;
             gList.Add(other.gameObject);
-
-            //DebugWindowScript.writeDebugMessage("Grabbables within trigger : " + collidersInsideTrigger, 0, "HandsFade script");
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Controllers"))
         {
             controllersInsideTrigger++;
-        }
-        else
-        {
-            //DebugWindowScript.writeDebugMessage("Not Grabbable", 0, "HandsFade script");
         }
     }
     private void OnTriggerExit(Collider other)
