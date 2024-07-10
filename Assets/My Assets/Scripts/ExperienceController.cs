@@ -17,6 +17,7 @@ public class ExperienceController : MonoBehaviour
     public static ExperienceController _ExperienceController { get; private set; }
     public GameObject _CanPrefab; // { get; private set; }
 
+
     [SerializeField] private GameObject _ZonePrefab;
     [SerializeField] private List<int> _SideLength; // Will use only index 0 so far
     [SerializeField] private List<ZoneOrder> _ZoneOrder12;
@@ -71,20 +72,20 @@ public class ExperienceController : MonoBehaviour
     // Activates current zone
     private void ActivateZone()
     {
-        if (currentZone > (_ZoneOrder12.Count - 1))
+        if (currentZone > 23)
         {
             currentZone = 0;
             _StepEnd?.Invoke();
         }
 
-        /*if (_ZoneOrder12[currentZone]._IsCan)
+        if (_ZoneOrder12[currentZone]._IsCan)
         {
-            _FadeHands?.Invoke(Zones[currentZone], false);
+            _FadeHands?.Invoke(Zones[currentZone], false); 
         }
         else
         {
             _FadeHands?.Invoke(Zones[currentZone], true);
-        }*/
+        }
 
         _ActivateZone?.Invoke(_ZoneOrder12[currentZone]._Zone);
     }

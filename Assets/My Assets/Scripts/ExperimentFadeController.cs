@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Policy;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,10 +11,14 @@ public class ExperimentFadeController : MonoBehaviour
     [SerializeField] private bool _LHanded;
     [SerializeField] private GameObject _Hand;
 
+    // Distance values
+    [SerializeField] private float epsilon; // Distance between the outside of the zone and max clamped distance value
+    [SerializeField] private float omega; // Distance between e and 0.5f opacity 
+    [SerializeField] private float _Rayon; // the radius of the zones
+
     private Vector3 handPosition;
     private GameObject zone;
     private bool fade; // If fade is set to true then the hand fades out
-    private float lastOpacity;
     private Material _HandMaterial;
     #endregion
 
@@ -49,11 +54,11 @@ public class ExperimentFadeController : MonoBehaviour
         // Fade calculation
         if (fade)
         {
-            SetOpacity(CalculateOpacity(0.0f));
+            SetOpacity(CalculateOpacity(true));
         }
         else
         {
-            SetOpacity(CalculateOpacity(0.9f));
+            SetOpacity(CalculateOpacity(false));
         }
 
         float outSize = Mathf.Lerp(0.0f, 0.005f, Mathf.Clamp(GV.handOutlineSize, 0, 1));
@@ -79,33 +84,40 @@ public class ExperimentFadeController : MonoBehaviour
         fade = f;
     }
 
-    // Calculate the linear interpolation between the last Opacity and the Target
-    /*private float CalculateOpacity(float target)
+    // Opacity calculation as 0.5f in the middle, and 1.0f or 0.0f at the zone depending on fade. For details read explination
+    private float CalculateOpacity(bool fade)
     {
-        float op;
-        float distance = Vector3.Magnitude(handPosition - zone.transform.position);
+        float op = 0.5f;
 
-        float mappedValue = (Mathf.Clamp(distance, 0.3f, 0.65f) - 0.3f) / (0.65f - 0.3f);
+        float distance = Vector3.Magnitude(this.transform.position - zone.transform.localPosition);
+        float clampedDistance = Mathf.Clamp(distance, _Rayon + epsilon, _Rayon + epsilon + omega);
+        float mappedDistance = (clampedDistance - (_Rayon + epsilon)) / (omega); // mapping it to [0, 1]
 
-        // Determins if it should be inverted or not (if tagets = to 0 or not)
-        if (target > 0.0f)
+        // Linear interpolation for the opacity between r+e and r+o+e
+        if (fade)
         {
-            op = Mathf.Clamp(Mathf.Lerp(lastOpacity, target, mappedValue), 0, 1);
+            op = 0.0f + Mathf.Lerp(0.0f, 0.5f, mappedDistance);
         }
         else
         {
-            op = 1 - Mathf.Clamp(Mathf.Lerp(lastOpacity, target, mappedValue), 0, 1);
+            op = 1.0f - Mathf.Lerp(0.0f, 0.5f, mappedDistance);
         }
 
+        NewDebugWindow.GetInstance().writeDebugMessage("opacity, distances : " + op + ", " + clampedDistance + ", " + mappedDistance, 0, "");
         return op;
-    }*/ // og function, works with linear interpolation between a target and current value
-
-
-    // Should work using the new zone as a target and a 0.5f middle point ////// Needs some serious mind power
-    private float CalculateOpacity(float target)
-    { 
-        return 0.0f;
     }
+    // Functionality explanation : Calculates an opacity between 0.5f and a target value of either 0.0f or 1.0f (Depending on fade)
+    //      - if fade is true then target is 0.0f, otherwise it's 1.0f
+    //      - _Rayon is the radius of the HandDetectionZone
+    //      - epsilon is the distance between the exterior of the zones hit box and the line where opacity reaches it's target value 
+    //      - omega is the distance between the epsilon line and the line defining the start of the interpolation (Before omega the value is 0.5f)
+    //
+    //                                          \                         \                               \
+    //                                           \                         \                               \
+    //      - it goes like this :       zone - - | - target.float - epsilon| - [0.5f, target.float] - omega| - 0.5f - - ...
+    //                                           /                         /                               /
+    //                                          /                         /                               /
+
 
     private void SetOpacity(float op)
     {
