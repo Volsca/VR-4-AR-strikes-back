@@ -20,6 +20,9 @@ public class ExperimentFadeController : MonoBehaviour
     private GameObject zone;
     private bool fade; // If fade is set to true then the hand fades out
     private Material _HandMaterial;
+    private bool stay;
+    private float stick;
+
     #endregion
 
     #region Awake/Start/Update Callbacks ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +30,8 @@ public class ExperimentFadeController : MonoBehaviour
     {
         handPosition = this.transform.position;
         fade = true;
+        stay = false;
+        stick = 1.0f;
 
         if (_LHanded)
         {
@@ -42,23 +47,25 @@ public class ExperimentFadeController : MonoBehaviour
 
         // Add callbacks to FadeSwitch()
         ExperienceController._FadeHands += FadeSwitch;
-
-
-
+        HandDetectionZone.FadeChanger += DeFadeAfterZoneExit;
     }
 
     private void Update()
     {
         handPosition = this.transform.position;
 
-        // Fade calculation
-        if (fade)
+        // Opacity calculation and setting
+        if (fade && !stay)
         {
             SetOpacity(CalculateOpacity(true));
         }
-        else
+        else if (!stay)
         {
             SetOpacity(CalculateOpacity(false));
+        }
+        else
+        {
+            SetOpacity(stick);
         }
 
         float outSize = Mathf.Lerp(0.0f, 0.005f, Mathf.Clamp(GV.handOutlineSize, 0, 1));
@@ -80,8 +87,26 @@ public class ExperimentFadeController : MonoBehaviour
     #region Methods /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void FadeSwitch(GameObject z, bool f)
     {
+        if (z == null)
+        {
+            NewDebugWindow.GetInstance().writeDebugMessage("FadeSwitch called with NULL zone", 1, "");
+        }
+
+        // Kind of crap duck tape to make opacity constant between same can zones
+        if (fade == f)
+        {
+            stay = true;
+            if (!f) { stick = 1.0f; }
+            else { stick = 0.0f; }
+        }
+
         zone = z;
         fade = f;
+    }
+
+    private void DeFadeAfterZoneExit()
+    {
+        if(true){} // TODO
     }
 
     // Opacity calculation as 0.5f in the middle, and 1.0f or 0.0f at the zone depending on fade. For details read explination
@@ -89,7 +114,7 @@ public class ExperimentFadeController : MonoBehaviour
     {
         float op = 0.5f;
 
-        float distance = Vector3.Magnitude(this.transform.position - zone.transform.localPosition);
+        float distance = Vector3.Magnitude(this.transform.position - zone.transform.position);
         float clampedDistance = Mathf.Clamp(distance, _Rayon + epsilon, _Rayon + epsilon + omega);
         float mappedDistance = (clampedDistance - (_Rayon + epsilon)) / (omega); // mapping it to [0, 1]
 
@@ -103,7 +128,7 @@ public class ExperimentFadeController : MonoBehaviour
             op = 1.0f - Mathf.Lerp(0.0f, 0.5f, mappedDistance);
         }
 
-        NewDebugWindow.GetInstance().writeDebugMessage("opacity, distances : " + op + ", " + clampedDistance + ", " + mappedDistance, 0, "");
+        NewDebugWindow.GetInstance().writeDebugMessage("opacity, distances : " + op + ", " + mappedDistance + ", " + clampedDistance + ", " + distance, 0, "");
         return op;
     }
     // Functionality explanation : Calculates an opacity between 0.5f and a target value of either 0.0f or 1.0f (Depending on fade)

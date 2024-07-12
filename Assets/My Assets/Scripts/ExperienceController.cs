@@ -34,7 +34,7 @@ public class ExperienceController : MonoBehaviour
     [SerializeField][Range(0, 0.5f)] private float _ZoneRayon; // Not yet used
 
     private int currentZone; // Saved index of which zone is active
-    private List<GameObject> Zones  = new List<GameObject>(); // Saved table of all zones, for the fade script.
+    private List<GameObject> Zones = new List<GameObject>(); // Saved table of all zones, for the fade script.
     public static event Action<int> _ActivateZone; // The event all the zones will be listening to
     public static event Action<List<int>> _CalibrationEnd;
     public static event Action _StepEnd;
@@ -72,7 +72,8 @@ public class ExperienceController : MonoBehaviour
     // Activates current zone
     private void ActivateZone()
     {
-        if (currentZone > 23)
+        //NewDebugWindow.GetInstance().writeDebugMessage("Current value : " + currentZone, 0, "");
+        if (currentZone > _ZoneOrder12.Count - 1)
         {
             currentZone = 0;
             _StepEnd?.Invoke();
@@ -80,13 +81,14 @@ public class ExperienceController : MonoBehaviour
 
         if (_ZoneOrder12[currentZone]._IsCan)
         {
-            _FadeHands?.Invoke(Zones[currentZone], false); 
+            _FadeHands?.Invoke(Zones[_ZoneOrder12[currentZone]._Zone], false);
         }
         else
         {
-            _FadeHands?.Invoke(Zones[currentZone], true);
+            _FadeHands?.Invoke(Zones[_ZoneOrder12[currentZone]._Zone], true);
         }
 
+        //NewDebugWindow.GetInstance().writeDebugMessage("Zone activated : " + _ZoneOrder12[currentZone]._Zone, 0, "");
         _ActivateZone?.Invoke(_ZoneOrder12[currentZone]._Zone);
     }
 
@@ -103,12 +105,12 @@ public class ExperienceController : MonoBehaviour
         GameObject tmp = Instantiate(_ZonePrefab, newPointCoords + this.transform.position, Quaternion.identity);
         tmp.SetActive(true);
         tmp.GetComponent<HandDetectionZone>().SetZoneNumber(i);
-        NewDebugWindow.GetInstance().writeDebugMessage("Created Zone at " + i, 0, "");
+        //NewDebugWindow.GetInstance().writeDebugMessage("Created Zone N°" + i, 0, "");
 
         Zones.Add(tmp);
         if (!(Zones[i] == tmp))
         {
-            NewDebugWindow.GetInstance().writeDebugMessage("List instertion error at" + i, 0, "");
+            //NewDebugWindow.GetInstance().writeDebugMessage("List instertion error at" + i, 1, "");
         }
         tmp.transform.parent = this.transform; // In case calibration is to be done after spawning the objects
     }
@@ -145,14 +147,19 @@ public class ExperienceController : MonoBehaviour
     // Initial setup of the experiment
     public void ExperimentSetup()
     {
-        NewDebugWindow.GetInstance().writeDebugMessage("Initial position at : " + newPointCoords, 0, "");
+        //NewDebugWindow.GetInstance().writeDebugMessage("Initial position at : " + newPointCoords, 0, "");
 
         // all the objects
         for (int i = 0; i < _SideLength[0] * 2; i++)
         {
             CreateZoneInstance(i);
             IncrementRotationAngle();
-            NewDebugWindow.GetInstance().writeDebugMessage(i + " initialized at : " + newPointCoords, 0, "");
+            //NewDebugWindow.GetInstance().writeDebugMessage(i + " initialized at : " + newPointCoords, 0, "");
+        }
+
+        if (Zones[12] == null)
+        {
+            //NewDebugWindow.GetInstance().writeDebugMessage("big erreur ça marche pas", 1, "");
         }
     }
 
@@ -170,13 +177,14 @@ public class ExperienceController : MonoBehaviour
     // Callback for when a zone gets completed
     public void ZoneComplete(int z)
     {
-        if (z == _ZoneOrder12[currentZone]._Zone)
+        if (z < _ZoneOrder12[currentZone]._Zone + 1 && z > _ZoneOrder12[currentZone]._Zone - 1)
         {
+            //NewDebugWindow.GetInstance().writeDebugMessage("Zone has been completed : " + z, 0, "");
+            //NewDebugWindow.GetInstance().writeDebugMessage("Next zone should be : " + _ZoneOrder12[(currentZone + 1) % _ZoneOrder12.Count]._Zone, 0, "");
             currentZone++;
             ActivateZone();
         }
     }
-
     #endregion
 
 

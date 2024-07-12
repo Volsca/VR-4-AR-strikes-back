@@ -1813,8 +1813,8 @@ MonoBehaviour:
   GV: {fileID: 1773701002}
   _LHanded: 0
   _Hand: {fileID: 818689787}
-  epsilon: 0.2
-  omega: 0.2
+  epsilon: 0.15
+  omega: 0.15
   _Rayon: 0.1
 --- !u!1 &597556695
 GameObject:
@@ -12634,8 +12634,8 @@ MonoBehaviour:
   GV: {fileID: 1773701002}
   _LHanded: 1
   _Hand: {fileID: 818689736}
-  epsilon: 0.2
-  omega: 0.2
+  epsilon: 0.15
+  omega: 0.15
   _Rayon: 0.1
 --- !u!1 &1170110675
 GameObject:

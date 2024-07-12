@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Policy;
@@ -12,12 +13,17 @@ public class HandDetectionZone : MonoBehaviour
     private GameObject _Can;
     private int _ZoneNumber;
     private bool _IsActive;
+    private bool _WasActive;
+
+    public static event Action FadeChanger;
+
     #endregion
 
     #region Awake/Start/Update Callbacks
     private void Awake()
     {
         _IsActive = false;
+        _WasActive = false;
 
         // Add listeners to the events
         ExperienceController._ActivateZone += OnActivateZone;
@@ -125,12 +131,27 @@ public class HandDetectionZone : MonoBehaviour
     // Detecting hands entering to enable the zone visuals switching
     private void OnTriggerEnter(Collider other)
     {
-        //Debug.LogError("Something entered zone" + other.gameObject.layer);
+
         if (other.CompareTag("Hands") || other.gameObject.layer == 13)
         {
+            //NewDebugWindow.GetInstance().writeDebugMessage("Something entered zone : " + _ZoneNumber, 1, "");
+            if (_IsActive)
+            {
+                _WasActive = true;
+            }
             _IsActive = false;
+
             ChangeState();
             ExperienceController._ExperienceController.ZoneComplete(_ZoneNumber);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if ((other.CompareTag("Hands") || other.gameObject.layer == 13) && _WasActive)
+        {
+            _WasActive = false;
+            FadeChanger?.Invoke();
         }
     }
     #endregion
