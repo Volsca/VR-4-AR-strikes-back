@@ -11,8 +11,11 @@ public class HandDetectionZone : MonoBehaviour
     public List<Material> _MaterialList;
 
     private GameObject _Can;
+
     private int _ZoneNumber;
+    
     private bool _IsActive;
+    
     private bool _WasActive;
 
     public static event Action FadeChanger;
@@ -131,7 +134,6 @@ public class HandDetectionZone : MonoBehaviour
     // Detecting hands entering to enable the zone visuals switching
     private void OnTriggerEnter(Collider other)
     {
-
         if (other.CompareTag("Hands") || other.gameObject.layer == 13)
         {
             //NewDebugWindow.GetInstance().writeDebugMessage("Something entered zone : " + _ZoneNumber, 1, "");

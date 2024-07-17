@@ -1816,6 +1816,7 @@ MonoBehaviour:
   epsilon: 0.15
   omega: 0.15
   _Rayon: 0.1
+  _FadeTime: 1
 --- !u!1 &597556695
 GameObject:
   m_ObjectHideFlags: 0
@@ -12637,6 +12638,7 @@ MonoBehaviour:
   epsilon: 0.15
   omega: 0.15
   _Rayon: 0.1
+  _FadeTime: 1
 --- !u!1 &1170110675
 GameObject:
   m_ObjectHideFlags: 0

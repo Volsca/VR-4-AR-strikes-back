@@ -9,45 +9,93 @@ public class ExperienceController : MonoBehaviour
     [Serializable]
     public struct ZoneOrder
     {
-        [SerializeField] public int _Zone;
-        [SerializeField] public bool _IsCan;
+        [SerializeField] 
+        public int _Zone;
+
+        [SerializeField] 
+        public bool _IsCan;
+
+        //[SerializeField] 
+        //public FadeState _Fade;
     }
 
     #region Attributes ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public static ExperienceController _ExperienceController { get; private set; }
+    public static ExperienceController _ExperienceController 
+    { get; private set; }
+
     public GameObject _CanPrefab; // { get; private set; }
 
 
-    [SerializeField] private GameObject _ZonePrefab;
-    [SerializeField] private List<int> _SideLength; // Will use only index 0 so far
-    [SerializeField] private List<ZoneOrder> _ZoneOrder12;
+    [SerializeField] 
+    private GameObject _ZonePrefab;
+
+    [SerializeField] 
+    private List<int> _SideLength; // Will use only index 0 so far
+
+    [SerializeField] 
+    private List<ZoneOrder> _ZoneOrder12;
 
 
-    [SerializeField] private lockY _LockY;
-    [SerializeField] private GameObject _CalibrationMenu;
-    //[SerializeField] private DebugWindow _Debugwindow;
+    [SerializeField] 
+    private lockY _LockY;
+
+    [SerializeField] 
+    private GameObject _CalibrationMenu;
+
+    //[SerializeField] 
+    //private DebugWindow _Debugwindow;
+
     private float angle;
+
     Vector3 newPointCoords;
 
     // Data to be set by the ExperimentManager later (BMLTux ?)
-    [SerializeField][Range(0, 0.4f)] private float _Rayon;
-    [SerializeField][Range(0, 0.5f)] private float _ZoneRayon; // Not yet used
+    [SerializeField]
+    [Range(0, 0.4f)] 
+    private float _Rayon;
+
+    [SerializeField]
+    [Range(0, 0.5f)] 
+    private float _ZoneRayon; // Not yet used
 
     private int currentZone; // Saved index of which zone is active
+
     private List<GameObject> Zones = new List<GameObject>(); // Saved table of all zones, for the fade script.
-    public static event Action<int> _ActivateZone; // The event all the zones will be listening to
+
+    // Rewrite as an enum // TODO
+    [SerializeField] 
+    public int Condition 
+    { private get; set; } 
+    // 0 if condition 1, 1 if 2 etc. 
+    // There are 3 conditions : 
+    //      - 0 : No avatar whatsoever
+    //      - 1 : Always an avatar fully opaque
+    //      - 2 : Fade between each avatar
+
+    // Events to control hand fade and zones
+    public static event Action _ExperimentStart;
+
+    // The event all the zones will be listening to
+    public static event Action<int> _ActivateZone; 
+
     public static event Action<List<int>> _CalibrationEnd;
+
     public static event Action _StepEnd;
-    public event Action _ResetExperiment;
+
+    // Not done // TODO
+    public event Action _ResetExperiment; 
+
     public static event Action<int> _ResetLastZone;
+
     public static event Action<GameObject, bool> _FadeHands;
+
     // public static event Action<GameObject, bool> _DeFadeHands;
     #endregion
 
     #region Initial Setup ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void Awake()
     {
-        currentZone = 0;
+        currentZone = -1;
         // Singleton
         if (_ExperienceController == null)
         {
@@ -147,30 +195,24 @@ public class ExperienceController : MonoBehaviour
     // Initial setup of the experiment
     public void ExperimentSetup()
     {
-        //NewDebugWindow.GetInstance().writeDebugMessage("Initial position at : " + newPointCoords, 0, "");
-
         // all the objects
         for (int i = 0; i < _SideLength[0] * 2; i++)
         {
             CreateZoneInstance(i);
             IncrementRotationAngle();
-            //NewDebugWindow.GetInstance().writeDebugMessage(i + " initialized at : " + newPointCoords, 0, "");
-        }
-
-        if (Zones[12] == null)
-        {
-            //NewDebugWindow.GetInstance().writeDebugMessage("big erreur ça marche pas", 1, "");
         }
     }
 
     public void OnCalibrationEnd()
     {
-        // Temporary "spawn cans here" protocol
+        // "spawn cans here" protocol
         SpawnCans(WhatZonesSpawnCans());
     }
 
     public void OnExperimentStart()
     {
+        _ExperimentStart?.Invoke();
+        currentZone = 0;
         ActivateZone();
     }
 
@@ -179,8 +221,6 @@ public class ExperienceController : MonoBehaviour
     {
         if (z < _ZoneOrder12[currentZone]._Zone + 1 && z > _ZoneOrder12[currentZone]._Zone - 1)
         {
-            //NewDebugWindow.GetInstance().writeDebugMessage("Zone has been completed : " + z, 0, "");
-            //NewDebugWindow.GetInstance().writeDebugMessage("Next zone should be : " + _ZoneOrder12[(currentZone + 1) % _ZoneOrder12.Count]._Zone, 0, "");
             currentZone++;
             ActivateZone();
         }

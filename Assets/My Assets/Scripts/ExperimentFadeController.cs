@@ -4,34 +4,71 @@ using System.Security.Policy;
 using Unity.VisualScripting;
 using UnityEngine;
 
+// First version of the fade machine states //
+//  - Disabled : constant 0.5f opacity,
+//  - KeepOpacity : Keep the last opacity (just don't do anything)
+//  - FadeTo1f : fade to 1.0f by function of the distance to the next object
+//  - FadeTo0f : same with 0.0f instead
+//  - DefadeFrom1f : Progressive defade from 1.0f to 0.5f
+//  - DefadeFrom0f : Same from 0.0f to 0.5f
+//
+public enum FadeState
+{
+    Disabled,
+    KeepOpacity,
+    FadeTo1f,
+    FadeTo0f,
+    DefadeFrom1f,
+    DefadeFrom0f
+}
+
 public class ExperimentFadeController : MonoBehaviour
 {
     #region Attributes //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    [SerializeField] private GlobalVariables GV;
-    [SerializeField] private bool _LHanded;
-    [SerializeField] private GameObject _Hand;
+    [SerializeField]
+    private GlobalVariables GV;
 
-    // Distance values
-    [SerializeField] private float epsilon; // Distance between the outside of the zone and max clamped distance value
-    [SerializeField] private float omega; // Distance between e and 0.5f opacity 
-    [SerializeField] private float _Rayon; // the radius of the zones
+    [SerializeField]
+    private bool _LHanded;
+
+    [SerializeField]
+    private GameObject _Hand;
+
+    // Distance configurable values
+    // Distance between the outside of the zone and max clamped distance value
+    [SerializeField]
+    private float epsilon;
+
+    // Distance between e and 0.5f opacity
+    [SerializeField]
+    private float omega;
+
+    // the radius of the zones
+    [SerializeField]
+    private float _Rayon;
+
+    [SerializeField]
+    private float _FadeTime;
+
+    private FadeState currentState;
 
     private Vector3 handPosition;
+
     private GameObject zone;
-    private bool fade; // If fade is set to true then the hand fades out
+
+    // If fade is set to true then the hand fades out
+    private bool fade;
+
     private Material _HandMaterial;
-    private bool stay;
-    private float stick;
 
     #endregion
 
     #region Awake/Start/Update Callbacks ////////////////////////////////////////////////////////////////////////////////////////////////////
     private void Awake()
     {
+        currentState = FadeState.Disabled;
         handPosition = this.transform.position;
         fade = true;
-        stay = false;
-        stick = 1.0f;
 
         if (_LHanded)
         {
@@ -47,88 +84,129 @@ public class ExperimentFadeController : MonoBehaviour
 
         // Add callbacks to FadeSwitch()
         ExperienceController._FadeHands += FadeSwitch;
-        HandDetectionZone.FadeChanger += DeFadeAfterZoneExit;
+        //HandDetectionZone.FadeChanger += DeFadeAfterZoneExit;
+        //ExperienceController._ExperimentStart += ExperimentStart;
     }
 
     private void Update()
     {
         handPosition = this.transform.position;
 
-        // Opacity calculation and setting
-        if (fade && !stay)
-        {
-            SetOpacity(CalculateOpacity(true));
-        }
-        else if (!stay)
-        {
-            SetOpacity(CalculateOpacity(false));
-        }
-        else
-        {
-            SetOpacity(stick);
-        }
-
-        float outSize = Mathf.Lerp(0.0f, 0.005f, Mathf.Clamp(GV.handOutlineSize, 0, 1));
-        _HandMaterial.SetFloat("_OutlineWidth", 0.003f);
-
-        if (_LHanded)
-        {
-            GV.l_Wrist.transform.localScale = new Vector3(1, 1, 1) * 1.05f;
-        }
-        else
-        {
-            GV.r_Wrist.transform.localScale = new Vector3(1, 1, 1) * 1.05f;
-        }
-
-        _Hand.transform.localScale = new Vector3(1, 1, 1) * 1.05f;
+        // Does all the work itself
+        Opacity();
+        SetSizesToBeCorrectCauseOtherwiseItsAllBroken();
     }
     #endregion
 
     #region Methods /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Callback for when the next zone changes to determine what state to be in
     private void FadeSwitch(GameObject z, bool f)
     {
-        if (z == null)
-        {
-            NewDebugWindow.GetInstance().writeDebugMessage("FadeSwitch called with NULL zone", 1, "");
-        }
-
-        // Kind of crap duck tape to make opacity constant between same can zones
-        if (fade == f)
-        {
-            stay = true;
-            if (!f) { stick = 1.0f; }
-            else { stick = 0.0f; }
-        }
-
-        zone = z;
         fade = f;
+        zone = z;
+
+        switch (currentState)
+        {
+            // Should be the case only for the start of the experiment so just set the currentState to what the next zone is
+            case FadeState.Disabled:
+                if (fade) { currentState = FadeState.FadeTo0f; }
+                else { currentState = FadeState.FadeTo1f; }
+                break;
+
+            // Should be the case for when a progressive defade is needed
+            case FadeState.KeepOpacity:
+                if (fade) { currentState = FadeState.DefadeFrom1f; }
+                else { currentState = FadeState.DefadeFrom0f; }
+                break;
+
+            // Should only lead to KeepOpacity
+            case FadeState.FadeTo1f:
+                if (!fade) { currentState = FadeState.KeepOpacity; }
+                else { NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (FadeTo1f)", 1, ""); }
+                break;
+
+            case FadeState.FadeTo0f:
+                if (fade) { currentState = FadeState.KeepOpacity; }
+                else { NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (FadeTo0f)", 1, ""); }
+                break;
+
+            // Should never be in the next two, but can never be too cautious
+            case FadeState.DefadeFrom1f:
+                NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (DefadeFrom1f)", 1, "");
+                break;
+
+            case FadeState.DefadeFrom0f:
+                NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (DefadeFrom0f)", 1, "");
+                break;
+
+            default:
+                NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (Default)", 1, "");
+                break;
+        }
     }
 
-    private void DeFadeAfterZoneExit()
+    // Main loop of the opacity calculation, to be called in the Update() funciton
+    private void Opacity()
     {
-        if(true){} // TODO
+        switch (currentState)
+        {
+            case FadeState.Disabled:
+                SetOpacity(0.5f);
+                break;
+
+            case FadeState.KeepOpacity:
+                if (fade) { SetOpacity(0.0f); }
+                else { SetOpacity(1.0f); }
+                break;
+
+            case FadeState.FadeTo1f:
+                SetOpacity(CalculateOpacity());
+                break;
+
+            case FadeState.FadeTo0f:
+                SetOpacity(CalculateOpacity());
+                break;
+
+            case FadeState.DefadeFrom1f:
+                StartCoroutine(DefadeCoroutine());
+                break;
+
+            case FadeState.DefadeFrom0f:
+                StartCoroutine(DefadeCoroutine());
+                break;
+
+            default:
+                SetOpacity(0.5f);
+                break;
+        }
     }
 
     // Opacity calculation as 0.5f in the middle, and 1.0f or 0.0f at the zone depending on fade. For details read explination
-    private float CalculateOpacity(bool fade)
+    private float CalculateOpacity()
     {
         float op = 0.5f;
 
+        // Calculation of a parametered distance between 0 and 1 for the lerp
         float distance = Vector3.Magnitude(this.transform.position - zone.transform.position);
         float clampedDistance = Mathf.Clamp(distance, _Rayon + epsilon, _Rayon + epsilon + omega);
-        float mappedDistance = (clampedDistance - (_Rayon + epsilon)) / (omega); // mapping it to [0, 1]
+        // mapping it to [0, 1]
+        float mappedDistance = (clampedDistance - (_Rayon + epsilon)) / (omega);
 
-        // Linear interpolation for the opacity between r+e and r+o+e
-        if (fade)
+        switch (currentState)
         {
-            op = 0.0f + Mathf.Lerp(0.0f, 0.5f, mappedDistance);
-        }
-        else
-        {
-            op = 1.0f - Mathf.Lerp(0.0f, 0.5f, mappedDistance);
+            case FadeState.FadeTo1f:
+                op = 1.0f - Mathf.Lerp(0.0f, 0.5f, mappedDistance);
+                break;
+
+            case FadeState.FadeTo0f:
+                op = 0.0f + Mathf.Lerp(0.0f, 0.5f, mappedDistance);
+                break;
+
+            default:
+                NewDebugWindow.GetInstance().writeDebugMessage("Error default in CalculateOpacity()", 1, "");
+                break;
         }
 
-        NewDebugWindow.GetInstance().writeDebugMessage("opacity, distances : " + op + ", " + mappedDistance + ", " + clampedDistance + ", " + distance, 0, "");
         return op;
     }
     // Functionality explanation : Calculates an opacity between 0.5f and a target value of either 0.0f or 1.0f (Depending on fade)
@@ -143,11 +221,67 @@ public class ExperimentFadeController : MonoBehaviour
     //                                           /                         /                               /
     //                                          /                         /                               /
 
+    IEnumerator DefadeCoroutine()
+    {
+        float op;
+        switch (currentState)
+        {
+            case FadeState.DefadeFrom1f:
+                for (op = 1f; op >= 0.5f; op -= 0.1f)
+                {
+                    SetOpacity(op);
+                    yield return new WaitForSeconds(.1f);
+                }
+                break;
 
+            case FadeState.DefadeFrom0f:
+                for (op = 0.0f; op <= 0.5f; op += 0.05f)
+                {
+                    SetOpacity(op);
+                    yield return new WaitForSeconds(.05f);
+                }
+                break;
+
+            default:
+                NewDebugWindow.GetInstance().writeDebugMessage("ERROR : in DefadeCoroutine", 1, "");
+                break;
+        }
+
+        NewDebugWindow.GetInstance().writeDebugMessage("Coroutine supposed to be over", 0, "");
+        if (fade) { currentState = FadeState.FadeTo0f; }
+        else { currentState = FadeState.FadeTo1f; }
+    }
+
+    // Sets the opacity directly to deport code from other functions
     private void SetOpacity(float op)
     {
         _HandMaterial.SetFloat("_Opacity", op);
         _HandMaterial.SetFloat("_OutlineOpacity", op);
+    }
+
+    // Necessary because i'm shit at coding (left a size override somewhere that I need to over-override)
+    private void SetSizesToBeCorrectCauseOtherwiseItsAllBroken()
+    {
+        float outSize = Mathf.Lerp(0.0f, 0.005f, Mathf.Clamp(GV.handOutlineSize, 0, 1));
+        _HandMaterial.SetFloat("_OutlineWidth", 0.003f);
+
+        if (_LHanded)
+        {
+            GV.l_Wrist.transform.localScale = new Vector3(1, 1, 1) * 1.05f;
+        }
+        else
+        {
+            GV.r_Wrist.transform.localScale = new Vector3(1, 1, 1) * 1.05f;
+        }
+
+        _Hand.transform.localScale = new Vector3(1, 1, 1) * 1.05f;
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from events
+        ExperienceController._FadeHands -= FadeSwitch;
+        //HandDetectionZone.FadeChanger -= DeFadeAfterZoneExit;
     }
     #endregion
 }
