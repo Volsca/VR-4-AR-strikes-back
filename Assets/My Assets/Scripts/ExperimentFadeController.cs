@@ -56,10 +56,14 @@ public class ExperimentFadeController : MonoBehaviour
 
     private GameObject zone;
 
+    private bool DefadeStarted;
+
     // If fade is set to true then the hand fades out
     private bool fade;
 
     private Material _HandMaterial;
+
+    private char currentCondition;
 
     #endregion
 
@@ -69,6 +73,7 @@ public class ExperimentFadeController : MonoBehaviour
         currentState = FadeState.Disabled;
         handPosition = this.transform.position;
         fade = true;
+        DefadeStarted = false;
 
         if (_LHanded)
         {
@@ -82,23 +87,65 @@ public class ExperimentFadeController : MonoBehaviour
         _HandMaterial.SetOverrideTag("RenderType", "Fade");
 
 
-        // Add callbacks to FadeSwitch()
+        // Add callbacks to FadeSwitch() and SetCurrentCondition()
         ExperienceController._FadeHands += FadeSwitch;
-        //HandDetectionZone.FadeChanger += DeFadeAfterZoneExit;
-        //ExperienceController._ExperimentStart += ExperimentStart;
+        ExperienceController._FadeConditionChange += SetCurrentCondition;
     }
 
     private void Update()
     {
         handPosition = this.transform.position;
 
-        // Does all the work itself
-        Opacity();
+        switch (currentCondition)
+        {
+            case 'r':
+                SetOpacity(0.0f);
+                break;
+
+            case 'v':
+                SetOpacity(1.0f);
+                break;
+
+            case 'h':
+                Opacity();
+                break;
+
+            case 'd':
+            default:
+                SetOpacity(0.5f);
+                break;
+        }
+
         SetSizesToBeCorrectCauseOtherwiseItsAllBroken();
     }
     #endregion
 
     #region Methods /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void SetCurrentCondition(char c)
+    {
+        switch (c)
+        {
+            // Real
+            case 'r':
+            case 'R':
+                currentCondition = 'r';
+                break;
+
+            case 'v':
+            case 'V':
+                currentCondition = 'v';
+                break;
+
+            case 'h':
+            case 'H':
+                currentCondition = 'h';
+                break;
+            default:
+                NewDebugWindow.GetInstance().writeDebugMessage("Error in SetCurrentCondition", 1, "");
+                break;
+        }
+    }
+
     // Callback for when the next zone changes to determine what state to be in
     private void FadeSwitch(GameObject z, bool f)
     {
@@ -122,21 +169,33 @@ public class ExperimentFadeController : MonoBehaviour
             // Should only lead to KeepOpacity
             case FadeState.FadeTo1f:
                 if (!fade) { currentState = FadeState.KeepOpacity; }
-                else { NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (FadeTo1f)", 1, ""); }
+                else // Catching errors
+                {
+                    currentState = FadeState.FadeTo0f;
+                    NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (FadeTo1f)", 1, "");
+                }
                 break;
 
             case FadeState.FadeTo0f:
                 if (fade) { currentState = FadeState.KeepOpacity; }
-                else { NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (FadeTo0f)", 1, ""); }
+                else // Catching errors
+                {
+                    currentState = FadeState.FadeTo1f;
+                    NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (FadeTo0f)", 1, "");
+                }
                 break;
 
             // Should never be in the next two, but can never be too cautious
             case FadeState.DefadeFrom1f:
                 NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (DefadeFrom1f)", 1, "");
+                if (fade) { currentState = FadeState.FadeTo0f; }
+                else { currentState = FadeState.FadeTo1f; }
                 break;
 
             case FadeState.DefadeFrom0f:
                 NewDebugWindow.GetInstance().writeDebugMessage("ERROR STATE DISCONTINUITY (DefadeFrom0f)", 1, "");
+                if (fade) { currentState = FadeState.FadeTo0f; }
+                else { currentState = FadeState.FadeTo1f; }
                 break;
 
             default:
@@ -168,11 +227,19 @@ public class ExperimentFadeController : MonoBehaviour
                 break;
 
             case FadeState.DefadeFrom1f:
-                StartCoroutine(DefadeCoroutine());
+                if (!DefadeStarted)
+                {
+                    StartCoroutine(DefadeCoroutine());
+                    DefadeStarted = true;
+                }
                 break;
 
             case FadeState.DefadeFrom0f:
-                StartCoroutine(DefadeCoroutine());
+                if (!DefadeStarted)
+                {
+                    StartCoroutine(DefadeCoroutine());
+                    DefadeStarted = true;
+                }
                 break;
 
             default:
@@ -250,6 +317,8 @@ public class ExperimentFadeController : MonoBehaviour
         NewDebugWindow.GetInstance().writeDebugMessage("Coroutine supposed to be over", 0, "");
         if (fade) { currentState = FadeState.FadeTo0f; }
         else { currentState = FadeState.FadeTo1f; }
+
+        DefadeStarted = false;
     }
 
     // Sets the opacity directly to deport code from other functions
@@ -281,6 +350,7 @@ public class ExperimentFadeController : MonoBehaviour
     {
         // Unsubscribe from events
         ExperienceController._FadeHands -= FadeSwitch;
+        ExperienceController._FadeConditionChange -= SetCurrentCondition;
         //HandDetectionZone.FadeChanger -= DeFadeAfterZoneExit;
     }
     #endregion

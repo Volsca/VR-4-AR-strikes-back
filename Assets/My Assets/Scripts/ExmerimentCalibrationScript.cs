@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -12,6 +13,9 @@ public class ExmerimentCalibrationScript : MonoBehaviour
     [SerializeField] private Slider slidySlideBoy;
     [SerializeField] private float calibMult;
     [SerializeField] private GameObject _Menu;
+
+    public static event Action _EndCalibration;
+    public static event Action _SetupExperiment;
 
     private Vector3 initPosition;
     #endregion
@@ -29,10 +33,12 @@ public class ExmerimentCalibrationScript : MonoBehaviour
     public void EndCalibration()
     {
         _ExpController.OnCalibrationEnd();
-        _Menu.SetActive(false);
+        _EndCalibration?.Invoke();
+        //_Menu.SetActive(false);
     }
     public void SetupExperiment()
     {
         _ExpController.ExperimentSetup();
+        _SetupExperiment?.Invoke();
     }
 }

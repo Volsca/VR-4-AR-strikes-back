@@ -8,17 +8,14 @@ using UnityEngine;
 public class HandDetectionZone : MonoBehaviour
 {
     #region  Attributes
+
     public List<Material> _MaterialList;
 
     private GameObject _Can;
 
     private int _ZoneNumber;
-    
-    private bool _IsActive;
-    
-    private bool _WasActive;
 
-    public static event Action FadeChanger;
+    private bool _IsActive;
 
     #endregion
 
@@ -26,14 +23,13 @@ public class HandDetectionZone : MonoBehaviour
     private void Awake()
     {
         _IsActive = false;
-        _WasActive = false;
 
         // Add listeners to the events
         ExperienceController._ActivateZone += OnActivateZone;
         ExperienceController._CalibrationEnd += OnCalibrationEnd;
-        ExperienceController._StepEnd += ResetCan;
         ExperienceController._ExperienceController._ResetExperiment += ResetExperiment;
     }
+
     #endregion
 
 
@@ -44,6 +40,15 @@ public class HandDetectionZone : MonoBehaviour
         _Can = Instantiate(ExperienceController._ExperienceController._CanPrefab, new Vector3(0, 0.2f, 0), Quaternion.identity);
         _Can.transform.Rotate(new Vector3(-90f, 0.0f, 0.0f));
         _Can.transform.position += this.transform.position;
+    }
+
+    public void DeleteCan()
+    {
+        if (_Can != null)
+        {
+            Destroy(_Can);
+            _Can = null;
+        }
     }
 
     // Set the corresponding material and alert the Experience controller
@@ -76,22 +81,25 @@ public class HandDetectionZone : MonoBehaviour
     {
         ExperienceController._ActivateZone -= OnActivateZone;
         ExperienceController._CalibrationEnd -= OnCalibrationEnd;
-        ExperienceController._StepEnd -= ResetCan;
     }
 
-    // Reset positions for testing
-    void ResetExperiment()
+    // Reset positions for testing // TODO
+    private void ResetExperiment()
     {
-        if (_ZoneNumber == 0)
-        {
-            _IsActive = true;
-        }
-        else
-        {
-            _IsActive = false;
-        }
+        DeactivateZone();
+        DeleteCan();
+    }
 
-        if (_Can != null) { ResetCan(); }
+    private void ActivateZone()
+    {
+        _IsActive = true;
+        ChangeState();
+    }
+
+    private void DeactivateZone()
+    {
+        _IsActive = false;
+        ChangeState();
     }
     #endregion
 
@@ -103,9 +111,9 @@ public class HandDetectionZone : MonoBehaviour
         if (zone == _ZoneNumber)
         {
             NewDebugWindow.GetInstance().writeDebugMessage("Zone " + _ZoneNumber + " activated", 0, "");
-            _IsActive = true;
+            ActivateZone();
         }
-        ChangeState();
+        
     }
 
     // Pretty self explanatory
@@ -137,23 +145,8 @@ public class HandDetectionZone : MonoBehaviour
         if (other.CompareTag("Hands") || other.gameObject.layer == 13)
         {
             //NewDebugWindow.GetInstance().writeDebugMessage("Something entered zone : " + _ZoneNumber, 1, "");
-            if (_IsActive)
-            {
-                _WasActive = true;
-            }
-            _IsActive = false;
-
-            ChangeState();
+            DeactivateZone();
             ExperienceController._ExperienceController.ZoneComplete(_ZoneNumber);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if ((other.CompareTag("Hands") || other.gameObject.layer == 13) && _WasActive)
-        {
-            _WasActive = false;
-            FadeChanger?.Invoke();
         }
     }
     #endregion

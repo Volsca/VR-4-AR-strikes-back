@@ -2,44 +2,70 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Policy;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
+
+[Serializable]
+public struct Set
+{
+    public char _Hand;
+
+    public char _Condition;
+
+    public int _Rounds;
+}
+
+[Serializable]
+public struct ZoneOrder
+{
+    [SerializeField]
+    public int _Zone;
+
+    [SerializeField]
+    public bool _IsCan;
+
+    //[SerializeField] 
+    //public FadeState _Fade;
+}
 
 public class ExperienceController : MonoBehaviour
 {
-    [Serializable]
-    public struct ZoneOrder
-    {
-        [SerializeField] 
-        public int _Zone;
-
-        [SerializeField] 
-        public bool _IsCan;
-
-        //[SerializeField] 
-        //public FadeState _Fade;
-    }
-
     #region Attributes ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public static ExperienceController _ExperienceController 
+    public static ExperienceController _ExperienceController
     { get; private set; }
 
     public GameObject _CanPrefab; // { get; private set; }
 
+    [SerializeField]
+    private List<Set> _SetList;
 
-    [SerializeField] 
+    private bool test;
+
+    private Set _TestSet;
+
+    private int currentSetIndex;
+
+    private int currentRound;
+
+    [SerializeField]
     private GameObject _ZonePrefab;
 
-    [SerializeField] 
+    [SerializeField]
     private List<int> _SideLength; // Will use only index 0 so far
 
-    [SerializeField] 
+    [SerializeField]
     private List<ZoneOrder> _ZoneOrder12;
 
+    [SerializeField]
+    private List<ZoneOrder> _ZoneOrderReal;
 
-    [SerializeField] 
+    [SerializeField]
+    private List<ZoneOrder> _ZoneOrderVirtual;
+
+    [SerializeField]
     private lockY _LockY;
 
-    [SerializeField] 
+    [SerializeField]
     private GameObject _CalibrationMenu;
 
     //[SerializeField] 
@@ -51,11 +77,11 @@ public class ExperienceController : MonoBehaviour
 
     // Data to be set by the ExperimentManager later (BMLTux ?)
     [SerializeField]
-    [Range(0, 0.4f)] 
+    [Range(0, 0.4f)]
     private float _Rayon;
 
     [SerializeField]
-    [Range(0, 0.5f)] 
+    [Range(0, 0.5f)]
     private float _ZoneRayon; // Not yet used
 
     private int currentZone; // Saved index of which zone is active
@@ -63,38 +89,35 @@ public class ExperienceController : MonoBehaviour
     private List<GameObject> Zones = new List<GameObject>(); // Saved table of all zones, for the fade script.
 
     // Rewrite as an enum // TODO
-    [SerializeField] 
-    public int Condition 
-    { private get; set; } 
-    // 0 if condition 1, 1 if 2 etc. 
-    // There are 3 conditions : 
-    //      - 0 : No avatar whatsoever
-    //      - 1 : Always an avatar fully opaque
-    //      - 2 : Fade between each avatar
+    //[SerializeField]
+    //private Condition CurrentCondition;
+    // These are the conditions (Defined in ICondition) : 
 
     // Events to control hand fade and zones
     public static event Action _ExperimentStart;
 
     // The event all the zones will be listening to
-    public static event Action<int> _ActivateZone; 
+    public static event Action<int> _ActivateZone;
 
     public static event Action<List<int>> _CalibrationEnd;
 
-    public static event Action _StepEnd;
-
     // Not done // TODO
-    public event Action _ResetExperiment; 
-
-    public static event Action<int> _ResetLastZone;
+    public event Action _ResetExperiment;
 
     public static event Action<GameObject, bool> _FadeHands;
 
-    // public static event Action<GameObject, bool> _DeFadeHands;
+    public static event Action _EndRound;
+
+    public static event Action<char> _FadeConditionChange;
+
     #endregion
 
     #region Initial Setup ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void Awake()
     {
+        currentRound = -1;
+        test = false;
+        currentSetIndex = -1;
         currentZone = -1;
         // Singleton
         if (_ExperienceController == null)
@@ -105,6 +128,7 @@ public class ExperienceController : MonoBehaviour
         angle = -2 * Mathf.PI / (2 * _SideLength[0]);
         newPointCoords = new Vector3(_Rayon, 0, 0) + new Vector3(0, -0.04f, 0);
     }
+
     void Update()
     {
         if (OVRInput.GetDown(OVRInput.Button.One))
@@ -120,32 +144,74 @@ public class ExperienceController : MonoBehaviour
     // Activates current zone
     private void ActivateZone()
     {
-        //NewDebugWindow.GetInstance().writeDebugMessage("Current value : " + currentZone, 0, "");
+
         if (currentZone > _ZoneOrder12.Count - 1)
         {
-            currentZone = 0;
-            _StepEnd?.Invoke();
-        }
-
-        if (_ZoneOrder12[currentZone]._IsCan)
-        {
-            _FadeHands?.Invoke(Zones[_ZoneOrder12[currentZone]._Zone], false);
+            _EndRound?.Invoke();
+            currentRound++;
+            StartRound();
         }
         else
         {
-            _FadeHands?.Invoke(Zones[_ZoneOrder12[currentZone]._Zone], true);
-        }
+            if (_ZoneOrder12[currentZone]._IsCan)
+            {
+                _FadeHands?.Invoke(Zones[_ZoneOrder12[currentZone]._Zone], false);
+            }
+            else
+            {
+                _FadeHands?.Invoke(Zones[_ZoneOrder12[currentZone]._Zone], true);
+            }
 
-        //NewDebugWindow.GetInstance().writeDebugMessage("Zone activated : " + _ZoneOrder12[currentZone]._Zone, 0, "");
-        _ActivateZone?.Invoke(_ZoneOrder12[currentZone]._Zone);
+            //NewDebugWindow.GetInstance().writeDebugMessage("Zone activated : " + _ZoneOrder12[currentZone]._Zone, 0, "");
+            _ActivateZone?.Invoke(_ZoneOrder12[currentZone]._Zone);
+        }
     }
 
-    // Resets for testing
+    private char GetHandCondition() => _SetList[currentSetIndex]._Hand;
+
+    private char GetZoneCondition() => _SetList[currentSetIndex]._Condition;
+
+    private int GetCurrentMaxRounds() => _SetList[currentSetIndex]._Rounds;
+
+    public void StartRound()
+    {
+        if (test)
+        {
+            
+        }
+        else
+        {
+
+        }
+
+        currentZone = 0;
+        ActivateZone();
+    }
+
+    /// <summary>
+    /// Made to be run from a custom interface passing the correct parameters
+    /// </summary>
+    /// <param name="h">Hand contition, either h, r or v</param>
+    /// <param name="c">Zone contition, either h, r or v</param>
+    /// <param name="r">Number of rounds to play</param>
+    public void StartTestRounds(char h, char c, int r)
+    {
+        test = true;
+
+        _TestSet._Hand = h;
+        _TestSet._Condition = c;
+        _TestSet._Rounds = r;
+
+        currentRound = 0;
+        currentZone = 0;
+        ActivateZone();
+    }
+
+    // Resets for testing // TODO
     public void ResetExperiment()
     {
         _ResetExperiment?.Invoke();
         currentZone = 0;
-        ActivateZone();
     }
 
     private void CreateZoneInstance(int i)
@@ -175,10 +241,42 @@ public class ExperienceController : MonoBehaviour
     // Deciding what zones spawn cans
     private List<int> WhatZonesSpawnCans()
     {
-        List<int> c = new List<int>(new int[5]);
-        for (int i = 0; i < 3; i++)
+        char a = GetZoneCondition();
+        List<int> c = new List<int>(new int[6]);
+
+        switch (a)
         {
-            c[i] = i * 2; // Returns (0, 2, 4)
+            case 'r':
+            case 'R':
+                for (int i = 0; i < c.Count; i++)
+                {
+                    c[i] = 0;
+                }
+                break;
+
+            case 'h':
+            case 'H':
+                for (int i = 0; i < 3; i++)
+                {
+                    c[i] = i * 2; // Returns (0, 2, 4)
+                }
+                break;
+
+            case 'v':
+            case 'V':
+                for (int i = 0; i < 3; i++)
+                {
+                    c[i] = i; // Returns (0, 1, 2, 3, 4, 5)
+                }
+                break;
+
+            default:
+                for (int i = 0; i < c.Count; i++)
+                {
+                    c[i] = 0;
+                }
+                NewDebugWindow.GetInstance().writeDebugMessage("Error in WhatZonesSpawnCans()", 1, "");
+                break;
         }
 
         return c;
@@ -212,8 +310,8 @@ public class ExperienceController : MonoBehaviour
     public void OnExperimentStart()
     {
         _ExperimentStart?.Invoke();
-        currentZone = 0;
-        ActivateZone();
+        //currentZone = 0;
+        //ActivateZone();
     }
 
     // Callback for when a zone gets completed
@@ -226,6 +324,9 @@ public class ExperienceController : MonoBehaviour
         }
     }
     #endregion
+}
 
+public class SetController : MonoBehaviour
+{
 
 }

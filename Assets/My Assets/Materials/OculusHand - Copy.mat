@@ -140,7 +140,7 @@ Material:
     - _ColorGlow: {r: 0.1215686, g: 0.1254902, b: 0.1294117, a: 1}
     - _ColorPrimary: {r: 1, g: 0.4481132, b: 0.4481132, a: 1}
     - _ColorSecondary: {r: 1, g: 0.8443396, b: 0.8443396, a: 1}
-    - _ColorTop: {r: 0.19607843, g: 0.20392157, b: 0.21176471, a: 1}
+    - _ColorTop: {r: 0.11774653, g: 0.522854, b: 0.9245283, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FingerGlowColor: {r: 1, g: 1, b: 1, a: 1}
     - _GlowColor: {r: 1, g: 1, b: 1, a: 1}

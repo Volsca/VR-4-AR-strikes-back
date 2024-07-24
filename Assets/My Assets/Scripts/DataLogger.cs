@@ -14,7 +14,7 @@ public class DataLogger : MonoBehaviour
 
     void Start()
     {
-        ExperienceController._StepEnd += NextRound;
+        //ExperienceController._StepEnd += NextRound;
 
         _RoundNumber = -1;
         _DataPath = Path.Combine(Application.persistentDataPath, "DataLog" + 0 + ".csv"); // Room for identification of test user
