@@ -12704,6 +12704,9 @@ GameObject:
   - component: {fileID: 1135603076}
   - component: {fileID: 1135603077}
   - component: {fileID: 1135603078}
+  - component: {fileID: 1135603081}
+  - component: {fileID: 1135603080}
+  - component: {fileID: 1135603079}
   m_Layer: 12
   m_Name: Experiment
   m_TagString: Untagged
@@ -12937,6 +12940,200 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90ca027dc42631545812dd9e1b1b1f37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1135603079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135603074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0fce6e75e2e77d4382dbd1efa33bc59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _CalibrationMenu: {fileID: 5187911312044857801}
+  _LockY: {fileID: 1135603076}
+  _ZonePrefab: {fileID: 1471828241}
+--- !u!114 &1135603080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135603074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a3222895ebec6a49a5d32410a776bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zoneOrdersIfVirtual:
+  - _Zone: 0
+    _IsCan: 1
+  - _Zone: 6
+    _IsCan: 1
+  - _Zone: 1
+    _IsCan: 1
+  - _Zone: 7
+    _IsCan: 1
+  - _Zone: 2
+    _IsCan: 1
+  - _Zone: 8
+    _IsCan: 1
+  - _Zone: 3
+    _IsCan: 1
+  - _Zone: 9
+    _IsCan: 1
+  - _Zone: 4
+    _IsCan: 1
+  - _Zone: 10
+    _IsCan: 1
+  - _Zone: 5
+    _IsCan: 1
+  - _Zone: 11
+    _IsCan: 1
+  - _Zone: 6
+    _IsCan: 1
+  - _Zone: 0
+    _IsCan: 1
+  - _Zone: 7
+    _IsCan: 1
+  - _Zone: 1
+    _IsCan: 1
+  - _Zone: 8
+    _IsCan: 1
+  - _Zone: 2
+    _IsCan: 1
+  - _Zone: 9
+    _IsCan: 1
+  - _Zone: 3
+    _IsCan: 1
+  - _Zone: 10
+    _IsCan: 1
+  - _Zone: 4
+    _IsCan: 1
+  - _Zone: 11
+    _IsCan: 1
+  - _Zone: 5
+    _IsCan: 1
+  zoneOrdersIfReal:
+  - _Zone: 0
+    _IsCan: 0
+  - _Zone: 6
+    _IsCan: 0
+  - _Zone: 1
+    _IsCan: 0
+  - _Zone: 7
+    _IsCan: 0
+  - _Zone: 2
+    _IsCan: 0
+  - _Zone: 8
+    _IsCan: 0
+  - _Zone: 3
+    _IsCan: 0
+  - _Zone: 9
+    _IsCan: 0
+  - _Zone: 4
+    _IsCan: 0
+  - _Zone: 10
+    _IsCan: 0
+  - _Zone: 5
+    _IsCan: 0
+  - _Zone: 11
+    _IsCan: 0
+  - _Zone: 6
+    _IsCan: 0
+  - _Zone: 0
+    _IsCan: 0
+  - _Zone: 7
+    _IsCan: 0
+  - _Zone: 1
+    _IsCan: 0
+  - _Zone: 8
+    _IsCan: 0
+  - _Zone: 2
+    _IsCan: 0
+  - _Zone: 9
+    _IsCan: 0
+  - _Zone: 3
+    _IsCan: 0
+  - _Zone: 10
+    _IsCan: 0
+  - _Zone: 4
+    _IsCan: 0
+  - _Zone: 11
+    _IsCan: 0
+  - _Zone: 5
+    _IsCan: 0
+  zoneOrdersIfHybrid:
+  - _Zone: 0
+    _IsCan: 1
+  - _Zone: 6
+    _IsCan: 1
+  - _Zone: 1
+    _IsCan: 0
+  - _Zone: 7
+    _IsCan: 0
+  - _Zone: 2
+    _IsCan: 1
+  - _Zone: 8
+    _IsCan: 1
+  - _Zone: 3
+    _IsCan: 0
+  - _Zone: 9
+    _IsCan: 0
+  - _Zone: 4
+    _IsCan: 1
+  - _Zone: 10
+    _IsCan: 1
+  - _Zone: 5
+    _IsCan: 0
+  - _Zone: 11
+    _IsCan: 0
+  - _Zone: 6
+    _IsCan: 1
+  - _Zone: 0
+    _IsCan: 1
+  - _Zone: 7
+    _IsCan: 0
+  - _Zone: 1
+    _IsCan: 0
+  - _Zone: 8
+    _IsCan: 1
+  - _Zone: 2
+    _IsCan: 1
+  - _Zone: 9
+    _IsCan: 0
+  - _Zone: 3
+    _IsCan: 0
+  - _Zone: 10
+    _IsCan: 1
+  - _Zone: 4
+    _IsCan: 1
+  - _Zone: 11
+    _IsCan: 0
+  - _Zone: 5
+    _IsCan: 0
+--- !u!114 &1135603081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135603074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 620618ef6a428ad42a3cfa11156671ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Calibrator:
+    rid: -2
+  roundController: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1001 &1140166412
 PrefabInstance:
   m_ObjectHideFlags: 0

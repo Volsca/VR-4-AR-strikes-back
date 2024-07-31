@@ -15,7 +15,7 @@ public struct Set
     public int _Rounds;
 }
 
-[Serializable]
+/*[Serializable]
 public struct ZoneOrder
 {
     [SerializeField]
@@ -26,7 +26,7 @@ public struct ZoneOrder
 
     //[SerializeField] 
     //public FadeState _Fade;
-}
+}*/
 
 public class ExperienceController : MonoBehaviour
 {

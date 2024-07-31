@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 /// <summary>
@@ -19,17 +21,20 @@ using UnityEngine;
 public class ExperimentMain : MonoBehaviour
 {
     #region Serialized Attributes 
-    [SerializeField] private ICalibrator Calibrator;
     #endregion
 
     #region Attributes
+    private ICalibrator Calibrator;
     private List<GameObject> zoneList = new List<GameObject>();
     private List<set> setList = new List<set>();
     private NewDebugWindow newDebugWindow = NewDebugWindow.GetInstance();
+    private int setListIndex;
     private bool isCalibrated;
     private bool ButtonPressed;
     private bool thisJustIn;
     private bool roundEnded;
+
+    public RoundController roundController;
     #endregion
 
     /// <summary>
@@ -39,11 +44,17 @@ public class ExperimentMain : MonoBehaviour
 
     void Awake()
     {
+        Calibrator = GetComponent<ICalibrator>();
         roundEnded = false;
         thisJustIn = false;
         ButtonPressed = false;
         isCalibrated = false;
+
+        setListIndex = 0;
+
         currentPhase = ExperiementPhase.Inactive;
+
+
 
         ButtonDown.AButtonDown += AButtonDown;
         ButtonDown.BButtonDown += BButtonDown;
@@ -51,7 +62,7 @@ public class ExperimentMain : MonoBehaviour
 
     void Update()
     {
-        if(!isCalibrated & ButtonPressed)
+        if (!isCalibrated & ButtonPressed)
         {
             OnInitialCalibration();
             ButtonPressed = true;
@@ -76,9 +87,17 @@ public class ExperimentMain : MonoBehaviour
         }
     }
 
-    private void StartRound()
+    private void StartSet()
     {
-
+        if (setListIndex >= 0 && setListIndex < setList.Count)
+        {
+            roundController.StartSet(setList[setListIndex]);
+            Calibrator.SpawnCans(setList[setListIndex]);
+        }
+        else
+        {
+            NewDebugWindow.GetInstance().writeDebugMessage("ERROR : " + setListIndex + " does not exist in setList", 1, "");
+        }
     }
 
     public void AButtonDown()
@@ -87,24 +106,6 @@ public class ExperimentMain : MonoBehaviour
     }
 
     public void BButtonDown()
-    {
-
-    }
-
-    /// <summary>
-    /// Advances the index by one, with all the necessary checks
-    /// </summary>
-    private void AdvanceInRound()
-    {
-
-    }
-
-    private void AdvanceInSet()
-    {
-
-    }
-
-    private void ActivateCurrentZone()
     {
 
     }
@@ -132,6 +133,7 @@ public class ExperimentMain : MonoBehaviour
             // Calibration code
             Calibrator.Calibrate();
             zoneList = Calibrator.GetHandDetectionZones();
+            roundController.Init(zoneList);
             isCalibrated = true;
         }
         else
@@ -157,6 +159,7 @@ public interface ICalibrator
 {
     public void Calibrate();
     public List<GameObject> GetHandDetectionZones();
+    public void SpawnCans(set s);
 }
 
 public enum ExperiementPhase

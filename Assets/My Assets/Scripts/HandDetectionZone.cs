@@ -24,8 +24,8 @@ public class HandDetectionZone : MonoBehaviour
     {
         _IsActive = false;
 
-        // Add listeners to the events
-        ExperienceController._ActivateZone += OnActivateZone;
+        // Add listeners to the events // TODO Change events
+        RoundController.ActivateZone += OnActivateZone;
         ExperienceController._CalibrationEnd += OnCalibrationEnd;
         ExperienceController._ExperienceController._ResetExperiment += ResetExperiment;
     }

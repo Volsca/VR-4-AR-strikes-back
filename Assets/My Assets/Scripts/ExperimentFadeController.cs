@@ -88,7 +88,8 @@ public class ExperimentFadeController : MonoBehaviour
 
 
         // Add callbacks to FadeSwitch() and SetCurrentCondition()
-        ExperienceController._FadeHands += FadeSwitch;
+        //ExperienceController._FadeHands += FadeSwitch;
+        RoundController.FadeHands += FadeSwitch;
         ExperienceController._FadeConditionChange += SetCurrentCondition;
     }
 

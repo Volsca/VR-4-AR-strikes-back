@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ using UnityEngine;
 /// only the order to spawn zones, and should return a list of 
 /// all the zones in the ExperimentMain script
 /// </summary>
+[Serializable]
 public class ZoneCalibration : MonoBehaviour, ICalibrator
 {
     private List<GameObject> zones = new List<GameObject>();
@@ -14,7 +16,9 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
     [SerializeField] private lockY _LockY;
     [SerializeField] private GameObject _ZonePrefab;
     private float angle = -2 * Mathf.PI / (2 * 6);
-    Vector3 newPointCoords = new Vector3(0.28f, 0, 0) + new Vector3(0, -0.04f, 0);   
+    Vector3 newPointCoords = new Vector3(0.28f, 0, 0) + new Vector3(0, -0.04f, 0);
+
+    public static event Action<List<int>> SpawnCansEvent;
 
     public void Calibrate()
     {
@@ -59,5 +63,49 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
         float tmpZ = newPointCoords.x * Mathf.Sin(angle) + newPointCoords.z * Mathf.Cos(angle);
         newPointCoords.x = tmpX;
         newPointCoords.z = tmpZ;
+    }
+
+    public void SpawnCans(set s)
+    {
+        SpawnCansEvent?.Invoke(WhatZonesSpawnCans(s.zone));
+    }
+
+    private List<int> WhatZonesSpawnCans(HandAndZoneCondition z)
+    {
+        List<int> c = new List<int>(new int[6]);
+
+        switch (z)
+        {
+            case HandAndZoneCondition.real:
+                for (int i = 0; i < c.Count; i++)
+                {
+                    c[i] = 0;
+                }
+                break;
+
+            case HandAndZoneCondition.hybrid:
+                for (int i = 0; i < 3; i++)
+                {
+                    c[i] = i * 2; // Returns (0, 2, 4)
+                }
+                break;
+
+            case HandAndZoneCondition.virt:
+                for (int i = 0; i < 3; i++)
+                {
+                    c[i] = i; // Returns (0, 1, 2, 3, 4, 5)
+                }
+                break;
+
+            default:
+                for (int i = 0; i < c.Count; i++)
+                {
+                    c[i] = 0;
+                }
+                NewDebugWindow.GetInstance().writeDebugMessage("Error in WhatZonesSpawnCans()", 1, "");
+                break;
+        }
+
+        return c;
     }
 }
