@@ -14,8 +14,8 @@ public class ExmerimentCalibrationScript : MonoBehaviour
     [SerializeField] private float calibMult;
     [SerializeField] private GameObject _Menu;
 
-    public static event Action _EndCalibration;
-    public static event Action _SetupExperiment;
+    public static event Action EndCalibration;
+    //public static event Action _SetupExperiment;
 
     private Vector3 initPosition;
     #endregion
@@ -30,15 +30,10 @@ public class ExmerimentCalibrationScript : MonoBehaviour
         _ExpPlane.transform.localPosition = initPosition + new Vector3(0, (slidySlideBoy.value - 0.7f) * calibMult, 0);
     }
 
-    public void EndCalibration()
+    public void OnEndCalibration()
     {
-        _ExpController.OnCalibrationEnd();
-        _EndCalibration?.Invoke();
+        //_ExpController.OnCalibrationEnd();
+        EndCalibration?.Invoke();
         //_Menu.SetActive(false);
-    }
-    public void SetupExperiment()
-    {
-        _ExpController.ExperimentSetup();
-        _SetupExperiment?.Invoke();
     }
 }

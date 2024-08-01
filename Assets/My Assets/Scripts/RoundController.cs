@@ -47,20 +47,22 @@ public class RoundController : MonoBehaviour
         isCurrentlyInSet = false;
         currentZone = 0;
         currentRound = 0;
+
+        HandDetectionZone.ZoneComplete += ZoneActivated;
     }
 
     public void Init(List<GameObject> zL)
     {
-        zoneList = zL; // TODO to be called
+        zoneList = zL;
     }
 
     public void StartSet(set set)
     {
         if (set.rounds > 0 && isCurrentlyInSet == false)
         {
+            NewDebugWindow.GetInstance().writeDebugMessage("StartSet()", 0, "");
             currentSet = set;
             SetZoneOrders(currentSet);
-            isCurrentlyInSet = true;
             StartRound();
         }
         else if (isCurrentlyInSet)
@@ -81,10 +83,13 @@ public class RoundController : MonoBehaviour
     {
         if (isCurrentlyInSet)
         {
+            NewDebugWindow.GetInstance().writeDebugMessage("StartRound() in set", 0, "");
             currentRound++;
         }
         else
         {
+            NewDebugWindow.GetInstance().writeDebugMessage("StartRound() out of set", 0, "");
+            isCurrentlyInSet = true;
             currentRound = 1;
         }
 
@@ -110,6 +115,7 @@ public class RoundController : MonoBehaviour
     /// </summary>
     private void AdvanceInRound()
     {
+        NewDebugWindow.GetInstance().writeDebugMessage("AdvanceInRound w currentZone : " + currentZone, 0, "");
         currentZone++;
 
         if (currentZone < zoneOrders.Count)
@@ -158,6 +164,7 @@ public class RoundController : MonoBehaviour
 
     private void InvokeActivateZone()
     {
+        NewDebugWindow.GetInstance().writeDebugMessage("IvokeActivateZone()", 0, "");
         ActivateZone?.Invoke(zoneOrders[currentZone]._Zone);
     }
 

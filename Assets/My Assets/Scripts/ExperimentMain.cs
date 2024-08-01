@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.EditorTools;
+//using UnityEditor.EditorTools;
 using UnityEngine;
 
 /// <summary>
@@ -28,11 +28,14 @@ public class ExperimentMain : MonoBehaviour
     private List<GameObject> zoneList = new List<GameObject>();
     private List<set> setList = new List<set>();
     private NewDebugWindow newDebugWindow = NewDebugWindow.GetInstance();
+    public GameObject CalibrationUI;
+    //public GameObject experiment;
     private int setListIndex;
     private bool isCalibrated;
-    private bool ButtonPressed;
-    private bool thisJustIn;
-    private bool roundEnded;
+    //private bool ButtonPressed;
+    //private bool thisJustIn;
+    //private bool roundEnded;
+    private bool isCurrentlyInExperiment;
 
     public RoundController roundController;
     #endregion
@@ -45,29 +48,31 @@ public class ExperimentMain : MonoBehaviour
     void Awake()
     {
         Calibrator = GetComponent<ICalibrator>();
-        roundEnded = false;
-        thisJustIn = false;
-        ButtonPressed = false;
+        //NewDebugWindow.GetInstance().writeDebugMessage("Calibrator : " + ((MonoBehaviour)Calibrator).name, 0, "");
+        //roundEnded = false;
+        //thisJustIn = false;
+        //ButtonPressed = false;
         isCalibrated = false;
+        isCurrentlyInExperiment = false;
 
         setListIndex = 0;
 
         currentPhase = ExperiementPhase.Inactive;
 
-
-
         ButtonDown.AButtonDown += AButtonDown;
         ButtonDown.BButtonDown += BButtonDown;
+
+        RoundController.OnSetEnded += EndSet;
     }
 
     void Update()
     {
-        if (!isCalibrated & ButtonPressed)
+        /*if (!isCalibrated & ButtonPressed)
         {
             OnInitialCalibration();
-            ButtonPressed = true;
-        }
-        else if (thisJustIn)
+            ButtonPressed = false;
+        }*/
+        /*else if (thisJustIn)
         {
             switch (currentPhase)
             {
@@ -84,15 +89,16 @@ public class ExperimentMain : MonoBehaviour
                 case ExperiementPhase.Current:
                     break;
             }
-        }
+        }*/
     }
 
     private void StartSet()
     {
         if (setListIndex >= 0 && setListIndex < setList.Count)
         {
-            roundController.StartSet(setList[setListIndex]);
+            NewDebugWindow.GetInstance().writeDebugMessage("Set Started at " + setListIndex, 0, "");
             Calibrator.SpawnCans(setList[setListIndex]);
+            roundController.StartSet(setList[setListIndex]);
         }
         else
         {
@@ -100,9 +106,38 @@ public class ExperimentMain : MonoBehaviour
         }
     }
 
+    private void EndSet()
+    {
+        setListIndex++;
+
+        if (setListIndex < setList.Count)
+        {
+            StartSet();
+        }
+        else
+        {
+            isCurrentlyInExperiment = false;
+            CalibrationUI.SetActive(true);
+
+            setList = new List<set>();
+        }
+    }
+
+    public void OnExperimentStart()
+    {
+        if (setList.Count > 0 && isCurrentlyInExperiment == false)
+        {
+            setListIndex = 0;
+            StartSet();
+        }
+    }
+
     public void AButtonDown()
     {
-        ButtonPressed = true;
+        if (!isCalibrated)
+        {
+            OnInitialCalibration();
+        }
     }
 
     public void BButtonDown()
@@ -121,25 +156,42 @@ public class ExperimentMain : MonoBehaviour
 
     }
 
-    private void OnExperimentStart()
-    {
-
-    }
-
     private void OnInitialCalibration()
     {
         if (!isCalibrated)
         {
             // Calibration code
             Calibrator.Calibrate();
-            zoneList = Calibrator.GetHandDetectionZones();
-            roundController.Init(zoneList);
             isCalibrated = true;
         }
         else
         {
             newDebugWindow.writeDebugMessage("Already Calibrated", 0, "");
         }
+    }
+    public void SecondCalibration()
+    {
+        Calibrator.SpawnZones();
+        zoneList = Calibrator.GetHandDetectionZones();
+        roundController.Init(zoneList);
+    }
+
+    public void AddHybridSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.hybrid, HandAndZoneCondition.hybrid, 3);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+
+    public void AddVirtualSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.virt, HandAndZoneCondition.virt, 3);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+
+    public void AddRealSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.real, HandAndZoneCondition.real, 3);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
     }
 
     public void ReceiveOrdersFromCommand(HandAndZoneCondition h, HandAndZoneCondition z, int r)
@@ -160,6 +212,7 @@ public interface ICalibrator
     public void Calibrate();
     public List<GameObject> GetHandDetectionZones();
     public void SpawnCans(set s);
+    public void SpawnZones();
 }
 
 public enum ExperiementPhase

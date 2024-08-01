@@ -17,6 +17,8 @@ public class HandDetectionZone : MonoBehaviour
 
     private bool _IsActive;
 
+    public static event Action<int> ZoneComplete;
+
     #endregion
 
     #region Awake/Start/Update Callbacks
@@ -26,8 +28,9 @@ public class HandDetectionZone : MonoBehaviour
 
         // Add listeners to the events // TODO Change events
         RoundController.ActivateZone += OnActivateZone;
-        ExperienceController._CalibrationEnd += OnCalibrationEnd;
-        ExperienceController._ExperienceController._ResetExperiment += ResetExperiment;
+        ZoneCalibration.SpawnCansEvent += OnCalibrationEnd;
+        //ExperienceController._ExperienceController._ResetExperiment += ResetExperiment;
+        ZoneCalibration.DeleteCansEvent += DeleteCan;
     }
 
     #endregion
@@ -146,7 +149,8 @@ public class HandDetectionZone : MonoBehaviour
         {
             //NewDebugWindow.GetInstance().writeDebugMessage("Something entered zone : " + _ZoneNumber, 1, "");
             DeactivateZone();
-            ExperienceController._ExperienceController.ZoneComplete(_ZoneNumber);
+            //ExperienceController._ExperienceController.ZoneComplete(_ZoneNumber);
+            ZoneComplete?.Invoke(_ZoneNumber);
         }
     }
     #endregion

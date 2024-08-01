@@ -19,6 +19,7 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
     Vector3 newPointCoords = new Vector3(0.28f, 0, 0) + new Vector3(0, -0.04f, 0);
 
     public static event Action<List<int>> SpawnCansEvent;
+    public static event Action DeleteCansEvent;
 
     public void Calibrate()
     {
@@ -29,6 +30,10 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
 
     public List<GameObject> GetHandDetectionZones()
     {
+        if (zones == new List<GameObject>())
+        {
+            SpawnZones();
+        }
         return zones;
     }
 
@@ -68,6 +73,11 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
     public void SpawnCans(set s)
     {
         SpawnCansEvent?.Invoke(WhatZonesSpawnCans(s.zone));
+    }
+
+    public void DeleteCans()
+    {
+        DeleteCansEvent?.Invoke();
     }
 
     private List<int> WhatZonesSpawnCans(HandAndZoneCondition z)
