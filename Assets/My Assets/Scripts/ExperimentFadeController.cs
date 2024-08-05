@@ -90,7 +90,7 @@ public class ExperimentFadeController : MonoBehaviour
         // Add callbacks to FadeSwitch() and SetCurrentCondition()
         //ExperienceController._FadeHands += FadeSwitch;
         RoundController.FadeHands += FadeSwitch;
-        ExperienceController._FadeConditionChange += SetCurrentCondition;
+        RoundController.SetFadeCondition += SetCurrentCondition;
     }
 
     private void Update()
@@ -122,23 +122,20 @@ public class ExperimentFadeController : MonoBehaviour
     #endregion
 
     #region Methods /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void SetCurrentCondition(char c)
+    public void SetCurrentCondition(set s)
     {
-        switch (c)
+        switch (s.hand)
         {
             // Real
-            case 'r':
-            case 'R':
+            case HandAndZoneCondition.real:
                 currentCondition = 'r';
                 break;
 
-            case 'v':
-            case 'V':
+            case HandAndZoneCondition.virt:
                 currentCondition = 'v';
                 break;
 
-            case 'h':
-            case 'H':
+            case HandAndZoneCondition.hybrid:
                 currentCondition = 'h';
                 break;
             default:
@@ -351,7 +348,7 @@ public class ExperimentFadeController : MonoBehaviour
     {
         // Unsubscribe from events
         ExperienceController._FadeHands -= FadeSwitch;
-        ExperienceController._FadeConditionChange -= SetCurrentCondition;
+        RoundController.SetFadeCondition -= SetCurrentCondition;
         //HandDetectionZone.FadeChanger -= DeFadeAfterZoneExit;
     }
     #endregion

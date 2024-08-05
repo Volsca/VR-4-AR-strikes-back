@@ -87,11 +87,9 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
         switch (z)
         {
             case HandAndZoneCondition.real:
-                for (int i = 0; i < c.Count; i++)
-                {
-                    c[i] = 0;
-                }
-                break;
+                List<int> s = new List<int>();
+                s.Add(0);
+                return s;
 
             case HandAndZoneCondition.hybrid:
                 for (int i = 0; i < 3; i++)
@@ -101,17 +99,13 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
                 break;
 
             case HandAndZoneCondition.virt:
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < c.Count; i++)
                 {
                     c[i] = i; // Returns (0, 1, 2, 3, 4, 5)
                 }
                 break;
 
             default:
-                for (int i = 0; i < c.Count; i++)
-                {
-                    c[i] = 0;
-                }
                 NewDebugWindow.GetInstance().writeDebugMessage("Error in WhatZonesSpawnCans()", 1, "");
                 break;
         }

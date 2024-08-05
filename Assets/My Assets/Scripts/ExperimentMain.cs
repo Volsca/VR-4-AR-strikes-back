@@ -29,10 +29,13 @@ public class ExperimentMain : MonoBehaviour
     private List<set> setList = new List<set>();
     private NewDebugWindow newDebugWindow = NewDebugWindow.GetInstance();
     public GameObject CalibrationUI;
+    public GameObject WaitUI;
     //public GameObject experiment;
     private int setListIndex;
     private bool isCalibrated;
-    //private bool ButtonPressed;
+    private bool ButtonPressed;
+    private bool waiting;
+    private bool wantNextSet;
     //private bool thisJustIn;
     //private bool roundEnded;
     private bool isCurrentlyInExperiment;
@@ -51,7 +54,9 @@ public class ExperimentMain : MonoBehaviour
         //NewDebugWindow.GetInstance().writeDebugMessage("Calibrator : " + ((MonoBehaviour)Calibrator).name, 0, "");
         //roundEnded = false;
         //thisJustIn = false;
-        //ButtonPressed = false;
+        waiting = false;
+        wantNextSet = false;
+        ButtonPressed = false;
         isCalibrated = false;
         isCurrentlyInExperiment = false;
 
@@ -67,11 +72,17 @@ public class ExperimentMain : MonoBehaviour
 
     void Update()
     {
-        /*if (!isCalibrated & ButtonPressed)
+        if (!isCalibrated & ButtonPressed)
         {
             OnInitialCalibration();
             ButtonPressed = false;
-        }*/
+        }
+        if(wantNextSet)
+        {
+            StartSet();
+            WaitUI.SetActive(false);
+            wantNextSet = false;
+        }
         /*else if (thisJustIn)
         {
             switch (currentPhase)
@@ -97,6 +108,7 @@ public class ExperimentMain : MonoBehaviour
         if (setListIndex >= 0 && setListIndex < setList.Count)
         {
             NewDebugWindow.GetInstance().writeDebugMessage("Set Started at " + setListIndex, 0, "");
+            
             Calibrator.SpawnCans(setList[setListIndex]);
             roundController.StartSet(setList[setListIndex]);
         }
@@ -106,13 +118,20 @@ public class ExperimentMain : MonoBehaviour
         }
     }
 
+    private void WaitForNextSet()
+    {
+        WaitUI.SetActive(true);
+        waiting = true;
+    }
+
     private void EndSet()
     {
         setListIndex++;
+        Calibrator.DeleteCans();
 
         if (setListIndex < setList.Count)
         {
-            StartSet();
+            WaitForNextSet();
         }
         else
         {
@@ -134,15 +153,20 @@ public class ExperimentMain : MonoBehaviour
 
     public void AButtonDown()
     {
-        if (!isCalibrated)
+        ButtonPressed = true;
+        /*if (!isCalibrated)
         {
             OnInitialCalibration();
-        }
+        }*/
     }
 
     public void BButtonDown()
     {
-
+        if(waiting)
+        {
+            wantNextSet = true;
+            waiting = false;
+        }
     }
 
     // Don't need as they deactivate them selves
@@ -212,6 +236,7 @@ public interface ICalibrator
     public void Calibrate();
     public List<GameObject> GetHandDetectionZones();
     public void SpawnCans(set s);
+    public void DeleteCans();
     public void SpawnZones();
 }
 

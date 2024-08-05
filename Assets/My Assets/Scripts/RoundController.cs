@@ -36,6 +36,7 @@ public class RoundController : MonoBehaviour
     public static event Action<GameObject, bool> FadeHands;
     public static event Action<int> ActivateZone;
     public static event Action OnSetEnded;
+    public static event Action<set> SetFadeCondition;
 
 
 
@@ -63,6 +64,7 @@ public class RoundController : MonoBehaviour
             NewDebugWindow.GetInstance().writeDebugMessage("StartSet()", 0, "");
             currentSet = set;
             SetZoneOrders(currentSet);
+            SetFadeCondition?.Invoke(currentSet);
             StartRound();
         }
         else if (isCurrentlyInSet)
