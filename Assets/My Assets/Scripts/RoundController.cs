@@ -32,13 +32,14 @@ public class RoundController : MonoBehaviour
     private bool roundJustEnded;
     private int currentRound;
     private int currentZone;
+    public int currentSetNum;
 
     public static event Action<GameObject, bool> FadeHands;
     public static event Action<int> ActivateZone;
     public static event Action OnSetEnded;
     public static event Action<set> SetFadeCondition;
-
-
+    public static event Action OnResetSet;
+    public static event Action<int, set, Vector3, int, int, string> WriteCurrentStep;
 
 
 
@@ -57,12 +58,13 @@ public class RoundController : MonoBehaviour
         zoneList = zL;
     }
 
-    public void StartSet(set set)
+    public void StartSet(set set, int cSN)
     {
         if (set.rounds > 0 && isCurrentlyInSet == false)
         {
             NewDebugWindow.GetInstance().writeDebugMessage("StartSet()", 0, "");
             currentSet = set;
+            currentSetNum = cSN;
             SetZoneOrders(currentSet);
             SetFadeCondition?.Invoke(currentSet);
             StartRound();
@@ -144,12 +146,29 @@ public class RoundController : MonoBehaviour
     /// <summary>
     /// Callback for when a zone gets activated, enabling the round to continue
     /// </summary>
-    private void ZoneActivated(int z)
+    private void ZoneActivated(int z, GameObject hand)
     {
         if (z == zoneOrders[currentZone]._Zone)
         {
+            try
+            {
+                WriteCurrentStep?.Invoke(zoneOrders[currentZone]._Zone, currentSet, 
+                                         zoneList[zoneOrders[currentZone]._Zone].transform.localPosition, currentSetNum, currentRound, hand.tag);
+            }
+            catch (Exception ex)
+            {
+                NewDebugWindow.GetInstance().writeDebugMessage("FATAL : " + ex + " ////currentZone : " + currentZone, 1, "");
+            }
+            
             AdvanceInRound();
         }
+    }
+
+    public void ResetSet()
+    {
+        OnResetSet?.Invoke();
+        isCurrentlyInSet = false;
+        WriteCurrentStep?.Invoke(999, currentSet, new Vector3(0, 0, 0), 999, 999, "-----RESET-----");
     }
 
     private void InvokeFade()

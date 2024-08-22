@@ -108,7 +108,7 @@ public class ExperienceController : MonoBehaviour
 
     public static event Action _EndRound;
 
-    public static event Action<char> _FadeConditionChange;
+    //public static event Action<char> _FadeConditionChange;
 
     #endregion
 

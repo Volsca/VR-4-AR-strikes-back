@@ -17,7 +17,7 @@ public class HandDetectionZone : MonoBehaviour
 
     private bool _IsActive;
 
-    public static event Action<int> ZoneComplete;
+    public static event Action<int, GameObject> ZoneComplete;
 
     #endregion
 
@@ -31,6 +31,7 @@ public class HandDetectionZone : MonoBehaviour
         ZoneCalibration.SpawnCansEvent += OnCalibrationEnd;
         //ExperienceController._ExperienceController._ResetExperiment += ResetExperiment;
         ZoneCalibration.DeleteCansEvent += DeleteCan;
+        RoundController.OnResetSet += DeactivateZone;
     }
 
     #endregion
@@ -86,7 +87,7 @@ public class HandDetectionZone : MonoBehaviour
         ExperienceController._CalibrationEnd -= OnCalibrationEnd;
     }
 
-    // Reset positions for testing // TODO
+    // Reset positions for testing
     private void ResetExperiment()
     {
         DeactivateZone();
@@ -99,7 +100,7 @@ public class HandDetectionZone : MonoBehaviour
         ChangeState();
     }
 
-    private void DeactivateZone()
+    public void DeactivateZone()
     {
         _IsActive = false;
         ChangeState();
@@ -116,42 +117,45 @@ public class HandDetectionZone : MonoBehaviour
             NewDebugWindow.GetInstance().writeDebugMessage("Zone " + _ZoneNumber + " activated", 0, "");
             ActivateZone();
         }
-        
+
     }
 
     // Pretty self explanatory
     private void OnCalibrationEnd(List<int> z)
     {
-        bool hastospawncanlikerightnow = false;
-        //NewDebugWindow.GetInstance().writeDebugMessage("Zone " + _ZoneNumber + " Detected calib end ", 0, "HandDetectionZone");   
+        if (z != null)
+        {
+            if (HasToSpawnCan(z))
+            {
+                NewDebugWindow.GetInstance().writeDebugMessage("Zone " + _ZoneNumber + " hastospawncan", 0, "");
+                SpawnCan();
+            }
+        }
+    }
+    private bool HasToSpawnCan(List<int> z)
+    {
         foreach (int i in z)
         {
             if (i == _ZoneNumber)
             {
-                hastospawncanlikerightnow = true;
+                return true;
             }
         }
 
-        if (hastospawncanlikerightnow)
-        {
-            NewDebugWindow.GetInstance().writeDebugMessage("Zone " + _ZoneNumber + " hastospawncan", 0, "");
-            SpawnCan();
-        }
-
-        // Calibration only ends once.
-        ExperienceController._CalibrationEnd -= OnCalibrationEnd;
+        return false;
     }
 
     // Detecting hands entering to enable the zone visuals switching
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Hands") || other.gameObject.layer == 13)
+        if (/*other.CompareTag("Hands") ||*/ other.gameObject.layer == 13)
         {
             //NewDebugWindow.GetInstance().writeDebugMessage("Something entered zone : " + _ZoneNumber, 1, "");
             DeactivateZone();
             //ExperienceController._ExperienceController.ZoneComplete(_ZoneNumber);
-            ZoneComplete?.Invoke(_ZoneNumber);
+            ZoneComplete?.Invoke(_ZoneNumber, other.gameObject);
         }
     }
+
     #endregion
 }

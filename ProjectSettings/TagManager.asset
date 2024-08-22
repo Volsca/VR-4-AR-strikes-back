@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Hands
+  - R_Hand
+  - L_Hand
   layers:
   - Default
   - TransparentFX

@@ -16,7 +16,7 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
     [SerializeField] private lockY _LockY;
     [SerializeField] private GameObject _ZonePrefab;
     private float angle = -2 * Mathf.PI / (2 * 6);
-    Vector3 newPointCoords = new Vector3(0.28f, 0, 0) + new Vector3(0, -0.04f, 0);
+    Vector3 newPointCoords = new Vector3(0.32f, 0, 0) + new Vector3(0, -0.04f, 0);
 
     public static event Action<List<int>> SpawnCansEvent;
     public static event Action DeleteCansEvent;
@@ -87,9 +87,7 @@ public class ZoneCalibration : MonoBehaviour, ICalibrator
         switch (z)
         {
             case HandAndZoneCondition.real:
-                List<int> s = new List<int>();
-                s.Add(0);
-                return s;
+                return null;
 
             case HandAndZoneCondition.hybrid:
                 for (int i = 0; i < 3; i++)

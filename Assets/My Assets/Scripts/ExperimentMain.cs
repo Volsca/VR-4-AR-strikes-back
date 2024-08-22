@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 //using UnityEditor.EditorTools;
 using UnityEngine;
+using TMPro;
 
 /// <summary>
 /// This class is the main body of the experiment, conaining what's 
@@ -30,12 +31,15 @@ public class ExperimentMain : MonoBehaviour
     private NewDebugWindow newDebugWindow = NewDebugWindow.GetInstance();
     public GameObject CalibrationUI;
     public GameObject WaitUI;
+    public TMP_Text TextMeshProUGUI;
+    private const int MAX_ROUNDS = 2;
     //public GameObject experiment;
     private int setListIndex;
     private bool isCalibrated;
     private bool ButtonPressed;
     private bool waiting;
     private bool wantNextSet;
+    private bool wantReset;
     //private bool thisJustIn;
     //private bool roundEnded;
     private bool isCurrentlyInExperiment;
@@ -54,6 +58,7 @@ public class ExperimentMain : MonoBehaviour
         //NewDebugWindow.GetInstance().writeDebugMessage("Calibrator : " + ((MonoBehaviour)Calibrator).name, 0, "");
         //roundEnded = false;
         //thisJustIn = false;
+        wantReset = false;
         waiting = false;
         wantNextSet = false;
         ButtonPressed = false;
@@ -66,6 +71,7 @@ public class ExperimentMain : MonoBehaviour
 
         ButtonDown.AButtonDown += AButtonDown;
         ButtonDown.BButtonDown += BButtonDown;
+        ButtonDown.ThumbstickDown += ThumbstickDown;
 
         RoundController.OnSetEnded += EndSet;
     }
@@ -77,11 +83,16 @@ public class ExperimentMain : MonoBehaviour
             OnInitialCalibration();
             ButtonPressed = false;
         }
-        if(wantNextSet)
+        if (wantNextSet)
         {
             StartSet();
             WaitUI.SetActive(false);
             wantNextSet = false;
+        }
+        if (wantReset)
+        {
+            wantReset = false;
+            ResetSet();
         }
         /*else if (thisJustIn)
         {
@@ -108,9 +119,9 @@ public class ExperimentMain : MonoBehaviour
         if (setListIndex >= 0 && setListIndex < setList.Count)
         {
             NewDebugWindow.GetInstance().writeDebugMessage("Set Started at " + setListIndex, 0, "");
-            
+
             Calibrator.SpawnCans(setList[setListIndex]);
-            roundController.StartSet(setList[setListIndex]);
+            roundController.StartSet(setList[setListIndex], setListIndex + 1);
         }
         else
         {
@@ -132,6 +143,7 @@ public class ExperimentMain : MonoBehaviour
         if (setListIndex < setList.Count)
         {
             WaitForNextSet();
+            SetNextSetText();
         }
         else
         {
@@ -146,6 +158,7 @@ public class ExperimentMain : MonoBehaviour
     {
         if (setList.Count > 0 && isCurrentlyInExperiment == false)
         {
+            isCurrentlyInExperiment = true;
             setListIndex = 0;
             StartSet();
         }
@@ -162,11 +175,73 @@ public class ExperimentMain : MonoBehaviour
 
     public void BButtonDown()
     {
-        if(waiting)
+        if (waiting)
         {
             wantNextSet = true;
             waiting = false;
         }
+    }
+
+    public void ThumbstickDown()
+    {
+        wantReset = true;
+    }
+
+
+    public void SetNextSetText()
+    {
+        TextMeshProUGUI.text = WhatTextToSet();
+    }
+
+    // Is an absolutely discusting function, and should burn. DO NOT LOOK INSIDE
+    private string WhatTextToSet()
+    {
+        switch (setList[setListIndex].hand)
+        {
+            case HandAndZoneCondition.hybrid:
+                switch (setList[setListIndex].zone)
+                {
+                    case HandAndZoneCondition.hybrid:
+                        return "H/H";
+
+                    case HandAndZoneCondition.virt:
+                        return "H/V";
+
+
+                    case HandAndZoneCondition.real:
+                        return "H/R";
+                }
+                break;
+
+            case HandAndZoneCondition.virt:
+                switch (setList[setListIndex].zone)
+                {
+                    case HandAndZoneCondition.hybrid:
+                        return "V/H";
+
+                    case HandAndZoneCondition.virt:
+                        return "V/V";
+
+                    case HandAndZoneCondition.real:
+                        return "V/R";
+                }
+                break;
+
+            case HandAndZoneCondition.real:
+                switch (setList[setListIndex].zone)
+                {
+                    case HandAndZoneCondition.hybrid:
+                        return "R/H";
+
+                    case HandAndZoneCondition.virt:
+                        return "R/V";
+
+                    case HandAndZoneCondition.real:
+                        return "R/R";
+                }
+                break;
+        }
+        return "ERROR";
     }
 
     // Don't need as they deactivate them selves
@@ -175,9 +250,18 @@ public class ExperimentMain : MonoBehaviour
 
     }*/
 
-    private void ResetExperiment()
+    /// <summary>
+    /// Reset the current set
+    /// </summary>
+    private void ResetSet()
     {
-
+        NewDebugWindow.GetInstance().writeDebugMessage("ResetSet called", 0, "");
+        if (isCurrentlyInExperiment)
+        {
+            setListIndex--;
+            roundController.ResetSet();
+            EndSet();
+        }
     }
 
     private void OnInitialCalibration()
@@ -200,23 +284,61 @@ public class ExperimentMain : MonoBehaviour
         roundController.Init(zoneList);
     }
 
-    public void AddHybridSet()
+    #region Laziness
+    public void AddHybridHybridSet()
     {
-        ReceiveOrdersFromCommand(HandAndZoneCondition.hybrid, HandAndZoneCondition.hybrid, 3);
+        ReceiveOrdersFromCommand(HandAndZoneCondition.hybrid, HandAndZoneCondition.hybrid, MAX_ROUNDS);
         NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
     }
 
-    public void AddVirtualSet()
+    public void AddHybridVirtualSet()
     {
-        ReceiveOrdersFromCommand(HandAndZoneCondition.virt, HandAndZoneCondition.virt, 3);
+        ReceiveOrdersFromCommand(HandAndZoneCondition.hybrid, HandAndZoneCondition.virt, MAX_ROUNDS);
         NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
     }
 
-    public void AddRealSet()
+    public void AddHybridRealSet()
     {
-        ReceiveOrdersFromCommand(HandAndZoneCondition.real, HandAndZoneCondition.real, 3);
+        ReceiveOrdersFromCommand(HandAndZoneCondition.hybrid, HandAndZoneCondition.real, MAX_ROUNDS);
         NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
     }
+
+    public void AddVirtualHybridSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.virt, HandAndZoneCondition.hybrid, MAX_ROUNDS);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+
+    public void AddVirtualVirtualSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.virt, HandAndZoneCondition.virt, MAX_ROUNDS);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+
+    public void AddVirtualRealSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.virt, HandAndZoneCondition.real, MAX_ROUNDS);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+
+    public void AddRealHybridSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.real, HandAndZoneCondition.hybrid, MAX_ROUNDS);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+
+    public void AddRealVirtualSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.real, HandAndZoneCondition.virt, MAX_ROUNDS);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+
+    public void AddRealRealSet()
+    {
+        ReceiveOrdersFromCommand(HandAndZoneCondition.real, HandAndZoneCondition.real, MAX_ROUNDS);
+        NewDebugWindow.GetInstance().writeDebugMessage("setList.Count = " + setList.Count, 0, "");
+    }
+    #endregion
 
     public void ReceiveOrdersFromCommand(HandAndZoneCondition h, HandAndZoneCondition z, int r)
     {
