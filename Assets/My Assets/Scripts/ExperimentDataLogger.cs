@@ -19,9 +19,11 @@ public class ExperimentDataLogger : MonoBehaviour
     private DataLogStorage data;
     private VelocityEstimator lHandVelocityEstimator;
     private VelocityEstimator rHandVelocityEstimator;
+    private bool startRecordingData;
 
     void Awake()
     {
+        startRecordingData = false;
         data = new DataLogStorage();
         //roundNumber = 0;
         pickUp = true;
@@ -35,7 +37,7 @@ public class ExperimentDataLogger : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_FILE_CONTINUOUS != null)
+        if (_FILE_CONTINUOUS != null && startRecordingData)
         {
             string logEntry = $"{Time.time}; "
                         + CurrentSet(data.currentSet) + "; "
@@ -46,12 +48,19 @@ public class ExperimentDataLogger : MonoBehaviour
                         + data.previousZonePosition + "; "
                         + GV.l_handMeshNode.transform.position + "; "
                         + lHandVelocityEstimator.GetVelocityEstimate() + "; "
+                        + lHandVelocityEstimator.GetAngularVelocityEstimate() + "; "
                         + GV.r_handMeshNode.transform.position + "; "
-                        + rHandVelocityEstimator.GetVelocityEstimate() + "; ";
+                        + rHandVelocityEstimator.GetVelocityEstimate() + "; "
+                        + rHandVelocityEstimator.GetAngularVelocityEstimate() + "; ";
 
             _FILE_CONTINUOUS.WriteLine(logEntry);
             _FILE_CONTINUOUS.Flush();
         }
+    }
+
+    public void StartRecordingData()
+    {
+        startRecordingData = true;
     }
 
     private void InitialiseStreamWriter()
@@ -61,11 +70,11 @@ public class ExperimentDataLogger : MonoBehaviour
 
         _FILE = new StreamWriter(new FileStream(_DATA_PATH, FileMode.Create), Encoding.UTF8);
         _FILE.WriteLine("TimeStamp; current_Set; current_Round; current_Zone; interactor; current_Action; zone-(x,y,z); " +
-                        "lHand-(x,y,z); l_Estimated_Velocity; rHand-(x,y,z); r_Estimated_Velocity; ");
+                        "lHand-(x,y,z); l_Estimated_Velocity; l_Estimated_Angular_Velocity; rHand-(x,y,z); r_Estimated_Velocity; r_Estimated_Angular_Velocity; ");
 
         _FILE_CONTINUOUS = new StreamWriter(new FileStream(_DATA_PATH_CONTINUOUS, FileMode.Create), Encoding.UTF8);
         _FILE_CONTINUOUS.WriteLine("TimeStamp; current_Set; current_Round; current_Zone; interactor; current_Action; zone-(x,y,z); " +
-                        "lHand-(x,y,z); l_Estimated_Velocity; rHand-(x,y,z); r_Estimated_Velocity; ");
+                        "lHand-(x,y,z); l_Estimated_Velocity; l_Estimated_Angular_Velocity; rHand-(x,y,z); r_Estimated_Velocity; r_Estimated_Angular_Velocity; ");
     }
 
     private void WriteCurrentStep(int currentZone, set currentSet, Vector3 currentZonePosition, int currentSetNum, int currentRound, string interactor) //, int currentSetnum, int currentRound)
@@ -81,8 +90,10 @@ public class ExperimentDataLogger : MonoBehaviour
                         + currentZonePosition + "; "
                         + GV.l_handMeshNode.transform.position + "; "
                         + lHandVelocityEstimator.GetVelocityEstimate() + "; "
+                        + lHandVelocityEstimator.GetAngularVelocityEstimate() + "; "
                         + GV.r_handMeshNode.transform.position + "; "
-                        + rHandVelocityEstimator.GetVelocityEstimate() + "; ";
+                        + rHandVelocityEstimator.GetVelocityEstimate() + "; "
+                        + rHandVelocityEstimator.GetAngularVelocityEstimate() + "; ";
 
         _FILE.WriteLine(logEntry);
         _FILE.Flush(); // Ensure each log entry is written immediately

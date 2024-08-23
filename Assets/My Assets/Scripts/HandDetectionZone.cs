@@ -42,7 +42,7 @@ public class HandDetectionZone : MonoBehaviour
     public void SpawnCan()
     {
         _Can = Instantiate(ExperienceController._ExperienceController._CanPrefab, new Vector3(0, 0.2f, 0), Quaternion.identity);
-        _Can.transform.Rotate(new Vector3(-90f, 0.0f, 0.0f));
+        _Can.transform.Rotate(new Vector3(-270f, 0.0f, 0.0f));
         _Can.transform.position += this.transform.position;
     }
 

@@ -12,6 +12,7 @@ public class LookAtHMD : MonoBehaviour
         if (HMD != null)
         {
             transform.LookAt(HMD.transform);
+            transform.Rotate(0, 180, 0);
         }
         else
         {

@@ -22,6 +22,7 @@ using TMPro;
 public class ExperimentMain : MonoBehaviour
 {
     #region Serialized Attributes 
+    [SerializeField] private ExperimentDataLogger experimentDataLogger;
     #endregion
 
     #region Attributes
@@ -158,6 +159,7 @@ public class ExperimentMain : MonoBehaviour
     {
         if (setList.Count > 0 && isCurrentlyInExperiment == false)
         {
+            experimentDataLogger.StartRecordingData();
             isCurrentlyInExperiment = true;
             setListIndex = 0;
             StartSet();
